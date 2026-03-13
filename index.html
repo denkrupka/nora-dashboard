@@ -2554,3 +2554,1770 @@ function drawRatAccessories(id, def) {
       ctx.fillRect(20, 3, 2, 3);
       // OWASP badge
       ctx.fillStyle = '#ff2244';
+      ctx.beginPath();
+      ctx.arc(-16, -2, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 4px "Share Tech Mono"';
+      ctx.textAlign = 'center';
+      ctx.fillText('O', -16, -1);
+      ctx.textAlign = 'left';
+      // Flash drives clipped to vest
+      ctx.fillStyle = '#222';
+      ctx.fillRect(-20, 6, 5, 4);
+      ctx.fillStyle = '#00aaff';
+      ctx.fillRect(-19, 7, 1.5, 1.5);
+      ctx.fillStyle = '#222';
+      ctx.fillRect(-20, 12, 5, 4);
+      ctx.fillStyle = '#ff0000';
+      ctx.fillRect(-19, 13, 1.5, 1.5);
+      // Lock symbol hanging
+      ctx.strokeStyle = '#888';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(18, -2, 3, Math.PI, 0);
+      ctx.stroke();
+      ctx.fillStyle = '#888';
+      ctx.fillRect(15, -2, 6, 5);
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath();
+      ctx.arc(18, 0, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+
+    case 'nornik':
+      // Wrench
+      ctx.fillStyle = '#aaa';
+      ctx.save();
+      ctx.translate(15, 0);
+      ctx.rotate(-0.3);
+      // Handle
+      ctx.fillRect(-2, -8, 4, 16);
+      // Open end
+      ctx.fillStyle = '#999';
+      ctx.fillRect(-5, -10, 10, 4);
+      ctx.fillStyle = '#aaa';
+      ctx.fillRect(-4, -8, 3, 3);
+      ctx.fillRect(1, -8, 3, 3);
+      // Closed end
+      ctx.fillStyle = '#bbb';
+      ctx.beginPath();
+      ctx.arc(0, 8, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#999';
+      ctx.beginPath();
+      ctx.arc(0, 8, 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      // Docker whale mascot icon
+      ctx.fillStyle = '#0db7ed';
+      ctx.save();
+      ctx.translate(-16, -4);
+      // Whale body
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 8, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Tail
+      ctx.beginPath();
+      ctx.moveTo(6, -2);
+      ctx.lineTo(11, -6);
+      ctx.lineTo(11, -1);
+      ctx.closePath();
+      ctx.fill();
+      // Containers on whale's back
+      ctx.fillStyle = '#fff';
+      for (let c = 0; c < 3; c++) {
+        ctx.fillRect(-4 + c * 3, -4, 2, 2);
+        ctx.strokeStyle = '#0db7ed';
+        ctx.lineWidth = 0.3;
+        ctx.strokeRect(-4 + c * 3, -4, 2, 2);
+      }
+      // Eye
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(-4, 1, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      break;
+
+    case 'syrolog':
+      // Cheese wedge in paw
+      ctx.fillStyle = '#ddaa22';
+      ctx.save();
+      ctx.translate(16, -5);
+      ctx.rotate(Math.sin((typeof frameCount !== 'undefined' ? frameCount : 0) * 0.02) * 0.1);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(12, 4);
+      ctx.lineTo(10, 13);
+      ctx.lineTo(-2, 9);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#aa8811';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+      // Cheese holes
+      ctx.fillStyle = '#cc9900';
+      ctx.beginPath();
+      ctx.arc(4, 5, 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(7, 10, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      // Pointer with $ sign
+      ctx.strokeStyle = '#FFD700';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(-5, -8);
+      ctx.lineTo(-18, -20);
+      ctx.stroke();
+      // $ tip
+      ctx.fillStyle = '#FFD700';
+      ctx.font = 'bold 7px "Share Tech Mono"';
+      ctx.textAlign = 'center';
+      ctx.fillText('$', -21, -22);
+      ctx.textAlign = 'left';
+      // ICP/LTV badge
+      ctx.fillStyle = '#1a1a3a';
+      ctx.fillRect(-22, 3, 18, 10);
+      ctx.strokeStyle = '#FFD70044';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(-22, 3, 18, 10);
+      ctx.fillStyle = '#aaaaff';
+      ctx.font = '3px "Share Tech Mono"';
+      ctx.fillText('ICP', -21, 7);
+      ctx.fillText('LTV', -21, 11);
+      ctx.fillText('CAC', -13, 7);
+      ctx.fillText('MRR', -13, 11);
+      break;
+
+    case 'arhivary':
+      // Stack of books (4 colors)
+      ctx.save();
+      ctx.translate(-22, -2);
+      const aBookColors = ['#2244aa', '#aa2244', '#22aa44', '#aa8800'];
+      aBookColors.forEach((bc, bi) => {
+        ctx.fillStyle = bc;
+        ctx.fillRect(0, -bi * 5, 15, 4);
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 0.3;
+        ctx.strokeRect(0, -bi * 5, 15, 4);
+        // Spine line
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        ctx.fillRect(1, -bi * 5, 2, 4);
+      });
+      ctx.restore();
+      // Extra small keyboard
+      ctx.fillStyle = '#1a1a2a';
+      drawRoundRect(10, 6, 14, 7, 2);
+      ctx.fill();
+      ctx.strokeStyle = '#252535';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(10, 6, 14, 7);
+      for (let kr = 0; kr < 2; kr++) {
+        for (let kk = 0; kk < 5; kk++) {
+          ctx.fillStyle = '#252535';
+          ctx.fillRect(11 + kk * 2.5, 7 + kr * 3, 2, 2.5);
+        }
+      }
+      break;
+
+    case 'planogriz':
+      // Daily planner diary
+      ctx.fillStyle = '#1a3a8a';
+      ctx.save();
+      ctx.translate(-20, -2);
+      drawRoundRect(0, 0, 13, 18, 2);
+      ctx.fill();
+      ctx.strokeStyle = '#2a4a9a';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(0, 0, 13, 18);
+      // Diary lines
+      ctx.fillStyle = '#8aafff40';
+      for (let l = 0; l < 5; l++) {
+        ctx.fillRect(1, 3 + l * 3, 11, 1);
+      }
+      // Checkmarks
+      ctx.fillStyle = '#00ff88';
+      ctx.font = '5px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('✓', 1, 7);
+      ctx.fillText('✓', 1, 10);
+      ctx.fillText('✓', 1, 13);
+      // Elastic band
+      ctx.strokeStyle = '#8a3a3a';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(6, 0);
+      ctx.lineTo(6, 18);
+      ctx.stroke();
+      ctx.restore();
+      // Watch face
+      ctx.fillStyle = '#222';
+      ctx.fillRect(-16, 9, 7, 5);
+      ctx.fillStyle = '#002244';
+      ctx.fillRect(-15, 9.5, 5, 4);
+      ctx.fillStyle = '#4488ff';
+      ctx.font = '3px "Share Tech Mono"';
+      ctx.fillText('09:41', -15, 12);
+      // Tie clip (gold)
+      ctx.fillStyle = '#FFD700';
+      ctx.fillRect(-1.5, 8, 3, 2);
+      // Calendar icon floating
+      ctx.fillStyle = '#00FFAA30';
+      ctx.font = '8px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('📅', 20, -8);
+      ctx.textAlign = 'left';
+      break;
+
+    default:
+      break;
+  }
+}
+
+// ============================================================
+// AGENT STATE SYSTEM
+// ============================================================
+const STAGE1_DEFS = AGENT_DEFS.filter(d => d.stage === 1);
+
+let agents = STAGE1_DEFS.map((def, idx) => ({
+  def,
+  status: 'idle',
+  task: '',
+  model: def.model,
+  provider: def.provider,
+  tokens_used: Math.floor(Math.random() * def.tokens_limit * 0.6),
+  tokens_limit: def.tokens_limit,
+  commits: Math.floor(Math.random() * 200),
+  uptime_seconds: Math.floor(Math.random() * 86400 * 3),
+  last_message: '',
+  updated_at: Date.now() - Math.random() * 60000,
+  // World position
+  x: 0, y: 0,
+  targetX: 0, targetY: 0,
+  deskIdx: idx % 6,
+  facing: 1,
+  // Blink phase
+  blinkOffset: Math.random() * Math.PI * 2,
+  // Idle
+  idleActivity: randInt(0, 13),
+  idleTimer: 0,
+  idleAnimT: Math.random() * 10,
+  // Particles
+  errorParticleTimer: 0,
+  // Doctor
+  needsDoctor: false,
+  doctorTimer: 0,
+  // Easter egg
+  isDancing: false,
+  danceT: 0,
+}));
+
+// ============================================================
+// DOCTOR NPC STATE
+// ============================================================
+const doctor = {
+  active: false,
+  x: 0, y: 0,
+  targetAgentIdx: -1,
+  phase: 'idle', // idle | running-in | treating | running-out
+  t: 0,
+  healTimer: 0,
+};
+
+// ============================================================
+// AMBULANCE STATE
+// ============================================================
+const ambulance = {
+  active: false,
+  x: -250, y: 0,
+  targetAgentIdx: -1,
+  phase: 'idle', // idle | driving-in | loading | driving-out
+  t: 0,
+};
+
+// ============================================================
+// PROVIDER TOKEN METERS
+// ============================================================
+const providerTokens = {
+  anthropic:  { used: 0.67, label: 'ANTHROPIC' },
+  openai:     { used: 0.34, label: 'OPENAI' },
+  gemini:     { used: 0.52, label: 'GEMINI' },
+  elevenlabs: { used: 0.88, label: '11LABS' },
+  vapi:       { used: 0.21, label: 'VAPI' },
+};
+
+// ============================================================
+// TICKER STATE
+// ============================================================
+const TICKER_POOL = [
+  '[ШНЫРЬ] Задача #142 выполнена ✓',
+  '[КОДОГРЫЗ] git commit -m "fix: critical auth bug" ✓',
+  '[НОРНИК] 🚀 Деплой на прод завершён успешно',
+  '[НЮХАЧ] Найдена уязвимость CVE-2025-1337 ⚠️',
+  '[АРХИНОР] ADR-042 утверждён • Microservices migration',
+  '[ПИСКЕЛЬ] UI kit v3.1 готов ✨ PIXEL PERFECT',
+  '[ШУРШИК] 47 багов задокументировано 🐛🐛🐛',
+  '[ЗАМОКРЫС] Пентест завершён. Всё ок. Почти. OWASP ✓',
+  '[СЫРОЛОГ] CAC снизился на 12% • LTV вырос 📈',
+  '[АРХИВАРЬ] Документация обновлена до v2.1 📚',
+  '[ПЛАНОГРЫЗ] Sprint 42 завершён ✅ Velocity: 89 SP',
+  '[СИСТЕМА] Tokens anthropic: 67% от лимита',
+  '[СИСТЕМА] Supabase ping: 18ms • Uptime: 99.7%',
+  '[ШНЫРЬ] Срочное совещание через 5 минут!',
+  '[КОДОГРЫЗ] NULL POINTER на строке 42. В процессе...',
+  '[НОРНИК] Kubernetes pod restarted × 3. Не спрашивай.',
+  '[НЮХАЧ] npm audit: 3 critical • 12 high • 44 moderate',
+  '[АРХИВАРЬ] README обновлён • Добавлены диаграммы',
+  '[ПЛАНОГРЫЗ] Следующий дедлайн: ЗАВТРА ⏰',
+  '[ЗАМОКРЫС] Обнаружен открытый порт 22 • Закрываю',
+];
+let tickerOffset = 0;
+let tickerText = TICKER_POOL.slice(0, 8).join('  ◆  ');
+let tickerAddTimer = 0;
+
+// ============================================================
+// CHEESE EASTER EGG STATE
+// ============================================================
+let cheeseClicks = 0;
+let cheeseClickTimer = 0;
+let easterEggActive = false;
+let easterEggTimer = 0;
+
+// ============================================================
+// POPUP STATE
+// ============================================================
+let selectedAgent = null;
+
+// ============================================================
+// POSITION HELPERS
+// ============================================================
+function getOfficePos(deskIdx) {
+  const desks = getScaledDesks();
+  const desk = desks[deskIdx % desks.length];
+  return { x: desk.chairX, y: desk.chairY + 10 };
+}
+
+function getBurrowIdlePos(agentIdx) {
+  const bp = getBurrowPositions();
+  const positions = [
+    { x: bp.couch.x + 20 + (agentIdx % 4) * 25, y: bp.couch.y + bp.couch.h - 8 },
+    { x: bp.bed.x + 15 + (agentIdx % 3) * 20,   y: bp.bed.y + bp.bed.h - 10 },
+    { x: bp.pizza.x + (agentIdx % 3) * 20,       y: bp.pizza.y - 8 },
+    { x: bp.tv.x + 10 + (agentIdx % 3) * 18,     y: bp.tv.y + bp.tv.h + 20 },
+    { x: bp.couch.x + 80 + (agentIdx % 3) * 15,  y: bp.couch.y + 15 },
+    { x: SPLIT_X + 60 + agentIdx * 22,            y: H * 0.73 },
+  ];
+  return positions[agentIdx % positions.length];
+}
+
+function getHolePos() {
+  return { x: SPLIT_X, y: H * 0.35 + H * 0.13 };
+}
+
+// ============================================================
+// DEMO MODE
+// ============================================================
+const SAMPLE_TASKS = [
+  'Анализирую требования...', 'Пишу тесты для auth модуля',
+  'Code review PR#88', 'Оптимизирую SQL-запросы',
+  'Деплою на стейджинг', 'git push origin main',
+  'Ищу баги в WebSocket', 'Проектирую схему БД v3',
+  'Пишу документацию API', 'Тестирую REST эндпоинты',
+  'Рефакторинг компонент', 'Мержу feature/auth-v2',
+  'Ревью безопасности', 'Настройка CI/CD пайплайна',
+  'Обновляю зависимости', 'Профилирование памяти',
+];
+
+let demoStatusTimer = 0;
+let demoIdleTimer   = 0;
+let demoTokenTimer  = 0;
+
+function initDemoMode() {
+  const statuses = ['working', 'working', 'running', 'idle', 'sleeping', 'error',
+                    'idle', 'working', 'idle', 'sleeping', 'idle'];
+  agents.forEach((agent, idx) => {
+    agent.status = statuses[idx % statuses.length];
+    agent.task   = pick(SAMPLE_TASKS);
+    const inBurrow = ['idle','done','sleeping','reserve','dead'].includes(agent.status);
+    const pos = inBurrow ? getBurrowIdlePos(idx) : getOfficePos(agent.deskIdx);
+    agent.x = pos.x; agent.y = pos.y;
+    agent.targetX = pos.x; agent.targetY = pos.y;
+    agent.idleActivity = inBurrow ? randInt(0, 13) : -1;
+    if (agent.status === 'error') {
+      agent.needsDoctor = true;
+      agent.doctorTimer = rand(5, 10);
+    }
+  });
+}
+
+function updateDemoMode(dt) {
+  demoStatusTimer += dt;
+  demoIdleTimer   += dt;
+  demoTokenTimer  += dt;
+  tickerAddTimer  += dt;
+
+  // Every 4s: one random agent changes status
+  if (demoStatusTimer >= 4) {
+    demoStatusTimer = 0;
+    const idx = randInt(0, agents.length - 1);
+    const agent = agents[idx];
+    const nextStatus = pick(['working','running','idle','sleeping','done']);
+    const prevStatus = agent.status;
+    agent.status = nextStatus;
+    agent.task   = pick(SAMPLE_TASKS);
+    agent.updated_at = Date.now();
+    const inBurrow = ['idle','done','sleeping'].includes(nextStatus);
+    if (inBurrow) {
+      const pos = getBurrowIdlePos(idx);
+      agent.targetX = pos.x; agent.targetY = pos.y;
+      agent.idleActivity = randInt(0, 13);
+      agent.idleTimer = 0;
+    } else {
+      const pos = getOfficePos(agent.deskIdx);
+      agent.targetX = pos.x; agent.targetY = pos.y;
+      agent.idleActivity = -1;
+    }
+    // Random error chance
+    if (Math.random() < 0.07) {
+      agent.status = 'error';
+      agent.needsDoctor = true;
+      agent.doctorTimer = rand(5, 10);
+      spawnParticle(agent.x, agent.y - 20, rand(-30, 30), rand(-50, -20), 2.5, '#ff2244', 8, 10, 'ERROR 500');
+      spawnParticle(agent.x, agent.y - 20, rand(-30, 30), rand(-50, -20), 2.5, '#ffaa00', 8, 10, 'SEGFAULT');
+    }
+    // Random dead chance
+    if (Math.random() < 0.02) {
+      agent.status = 'dead';
+      if (!ambulance.active) triggerAmbulance(idx);
+    }
+  }
+
+  // Every 15s: idle agents get new activity
+  if (demoIdleTimer >= 15) {
+    demoIdleTimer = 0;
+    agents.forEach(agent => {
+      if (agent.status === 'idle' || agent.status === 'done') {
+        agent.idleActivity = randInt(0, 13);
+        agent.idleTimer = 0;
+        agent.idleAnimT = 0;
+      }
+    });
+  }
+
+  // Every 30s: token drift
+  if (demoTokenTimer >= 30) {
+    demoTokenTimer = 0;
+    agents.forEach(agent => {
+      const delta = rand(0.01, 0.04) * agent.tokens_limit;
+      agent.tokens_used = clamp(agent.tokens_used + delta, 0, agent.tokens_limit);
+      agent.uptime_seconds += 30;
+      if (Math.random() > 0.6) agent.commits++;
+    });
+    Object.keys(providerTokens).forEach(p => {
+      providerTokens[p].used = clamp(providerTokens[p].used + rand(-0.03, 0.06), 0.05, 0.99);
+    });
+  }
+
+  // Ticker refresh every 9s
+  if (tickerAddTimer >= 9) {
+    tickerAddTimer = 0;
+    const msg = pick(TICKER_POOL);
+    tickerText += '  ◆  ' + msg;
+    if (tickerText.length > 800) tickerText = tickerText.slice(300);
+  }
+
+  // Move agents toward targets
+  agents.forEach(agent => {
+    const dx = agent.targetX - agent.x;
+    const dy = agent.targetY - agent.y;
+    const d  = Math.hypot(dx, dy);
+    if (d > 2) {
+      const speed = agent.status === 'running' ? 130 : 65;
+      agent.x += (dx / d) * speed * dt;
+      agent.y += (dy / d) * speed * dt;
+      agent.facing = dx > 0 ? 1 : -1;
+    }
+    agent.idleAnimT += dt;
+    agent.uptime_seconds += dt;
+  });
+
+  // Doctor trigger
+  agents.forEach((agent, idx) => {
+    if (agent.needsDoctor) {
+      agent.doctorTimer -= dt;
+      if (agent.doctorTimer <= 0 && !doctor.active) {
+        triggerDoctor(idx);
+        agent.needsDoctor = false;
+      }
+    }
+  });
+
+  // Easter egg timer
+  cheeseClickTimer = Math.max(0, cheeseClickTimer - dt);
+  if (cheeseClickTimer === 0) cheeseClicks = 0;
+  if (easterEggActive) {
+    easterEggTimer -= dt;
+    agents.forEach(a => { a.danceT += dt; });
+    if (easterEggTimer <= 0) {
+      easterEggActive = false;
+      agents.forEach(a => { a.isDancing = false; });
+    }
+  }
+}
+
+// ============================================================
+// 14 IDLE ANIMATIONS
+// ============================================================
+function drawIdleActivity(agent) {
+  const act = agent.idleActivity;
+  const t   = agent.idleAnimT;
+
+  ctx.save();
+  ctx.translate(agent.x, agent.y);
+
+  switch (act) {
+
+    case 0: { // 🍺 Пьёт пиво — BUUUURP
+      drawRat(agent, 0, 0, 1, 0.9);
+      // Beer can in raised paw
+      ctx.save();
+      ctx.translate(13, -18);
+      ctx.rotate(-0.3 + Math.sin(t * 0.8) * 0.4);
+      ctx.fillStyle = '#1a4020';
+      ctx.fillRect(-3, -6, 7, 14);
+      ctx.fillStyle = '#ffcc00'; ctx.fillRect(-3, -6, 7, 3);
+      ctx.fillStyle = '#ccc'; ctx.fillRect(-2, -7, 5, 1.5);
+      ctx.restore();
+      // Bubbles
+      if (Math.sin(t * 1.5) > 0.5) {
+        ctx.globalAlpha = 0.7 - Math.sin(t * 1.5) * 0.4;
+        ctx.fillStyle = '#cceeff';
+        ctx.beginPath();
+        ctx.arc(22, -35 + Math.sin(t * 2) * 3, 5 + Math.cos(t) * 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#88ccaa';
+        ctx.font = '6px "Share Tech Mono"';
+        ctx.textAlign = 'center';
+        ctx.fillText('BUUUURP', 35, -42);
+        ctx.textAlign = 'left';
+      }
+      break;
+    }
+
+    case 1: { // 🎮 Играет, бросает геймпад
+      drawRat(agent, 0, 0, 1, 0.9);
+      // Gamepad
+      ctx.fillStyle = '#222';
+      drawRoundRect(9, -20, 22, 14, 4);
+      ctx.fill();
+      ctx.fillStyle = '#ff0000';
+      ctx.beginPath(); ctx.arc(25, -14, 2.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0000ff';
+      ctx.beginPath(); ctx.arc(20, -11, 2.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#00aa00';
+      ctx.beginPath(); ctx.arc(25, -8, 2.5, 0, Math.PI * 2); ctx.fill();
+      // Tongue sticking out
+      ctx.fillStyle = '#ff8888';
+      ctx.beginPath();
+      ctx.ellipse(11, -9, 3, 5, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+      // Button mash sparks
+      if (Math.sin(t * 10) > 0.4) {
+        spawnParticle(agent.x + 25, agent.y - 13, rand(-12, 12), rand(-25, -5), 0.3, '#ffff00', 2, 25);
+      }
+      break;
+    }
+
+    case 2: { // 🍕 Жрёт пиццу
+      drawRat(agent, 0, 0, 1, 0.9);
+      // Pizza slice being devoured
+      ctx.save();
+      ctx.translate(16, -18);
+      ctx.rotate(-0.4 + Math.sin(t * 3) * 0.15);
+      ctx.fillStyle = '#cc8833';
+      ctx.beginPath();
+      ctx.moveTo(0, 0); ctx.lineTo(18, -7); ctx.lineTo(16, 9); ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#aa2222';
+      ctx.beginPath();
+      ctx.moveTo(1, 0); ctx.lineTo(15, -5); ctx.lineTo(13, 7); ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#ddaa33';
+      ctx.beginPath();
+      ctx.moveTo(2, 0); ctx.lineTo(14, -4); ctx.lineTo(12, 6); ctx.closePath();
+      ctx.fill();
+      // Bite marks
+      ctx.fillStyle = '#cc8833';
+      ctx.beginPath(); ctx.arc(1, 0, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      // Crumbs flying
+      if (Math.sin(t * 5) > 0.5) {
+        spawnParticle(agent.x + 16, agent.y - 16, rand(-25, 15), rand(-15, -35), 0.9, '#cc8833', 2, 25);
+      }
+      break;
+    }
+
+    case 3: { // 😴 Дрыхнет на диване/полу
+      ctx.save();
+      ctx.translate(0, 8);
+      ctx.rotate(Math.PI * 0.48);
+      drawRat(agent, 0, 0, 1, 0.8);
+      ctx.restore();
+      // ZZZ floating
+      for (let z = 0; z < 4; z++) {
+        const zt = (t * 0.5 + z * 0.9) % 3;
+        ctx.globalAlpha = Math.max(0, 1 - zt / 3);
+        ctx.fillStyle = '#aabbff';
+        ctx.font = `${7 + z * 3}px "Share Tech Mono"`;
+        ctx.textAlign = 'center';
+        ctx.fillText('Z', 18 + zt * 7 + z * 3, -12 - z * 12 - zt * 10);
+        ctx.textAlign = 'left';
+      }
+      ctx.globalAlpha = 1;
+      break;
+    }
+
+    case 4: { // 🧀 Грызёт сыр
+      drawRat(agent, 0, 0, 1, 0.9);
+      // Cheese block gnawing
+      ctx.save();
+      ctx.translate(15, -14);
+      ctx.rotate(Math.sin(t * 0.5) * 0.08);
+      ctx.fillStyle = '#ddaa22';
+      ctx.beginPath();
+      ctx.moveTo(0, 0); ctx.lineTo(13, 3); ctx.lineTo(11, 13); ctx.lineTo(-2, 10); ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#aa8811'; ctx.lineWidth = 0.5; ctx.stroke();
+      ctx.fillStyle = '#cc9900';
+      ctx.beginPath(); ctx.arc(4, 5, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(8, 9, 1.2, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      // Crumbs from nibbling
+      if (Math.sin(t * 7) > 0.2) {
+        spawnParticle(agent.x + 15, agent.y - 14, rand(-18, 12), rand(-8, -22), 0.7, '#ddaa22', 1.5, 30);
+      }
+      break;
+    }
+
+    case 5: { // 🥊 Дерётся с другой крысой
+      const fightBob = Math.sin(t * 12) * 3;
+      ctx.save();
+      ctx.translate(0, fightBob);
+      drawRat(agent, 0, 0, 1, 0.9);
+      ctx.restore();
+      // Punch flash
+      if (Math.sin(t * 9) > 0.4) {
+        ctx.font = '14px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('💥', 28, -18 + fightBob);
+        ctx.textAlign = 'left';
+        spawnParticle(agent.x + 28, agent.y - 18, rand(-35, 35), rand(-35, -10), 0.6, '#ffaa00', 3, 20);
+      }
+      // Stars
+      if (Math.sin(t * 7) > 0.7) {
+        for (let s = 0; s < 3; s++) {
+          spawnParticle(agent.x + 22 + s * 6, agent.y - 24, rand(-22, 22), rand(-35, 0), 1.2, '#ffdd00', 2, 12, '★');
+        }
+      }
+      break;
+    }
+
+    case 6: { // 📺 Смотрит ТВ не моргая
+      drawRat(agent, 0, 0, 1, 0.9);
+      // Wide open eyes override
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(3, -15, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(9, -14, 2.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = agent.def.eyes;
+      ctx.beginPath(); ctx.arc(3, -15, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(9, -14, 1.5, 0, Math.PI * 2); ctx.fill();
+      // Slack jaw
+      ctx.fillStyle = '#aa7788';
+      ctx.beginPath();
+      ctx.ellipse(11, -8, 3, 5, 0, 0, Math.PI); ctx.fill();
+      // Censor block nearby (TV reflection in eyes)
+      ctx.fillStyle = '#000';
+      ctx.fillRect(22, -28, 20, 16);
+      ctx.strokeStyle = '#ff000088'; ctx.lineWidth = 1;
+      ctx.strokeRect(22, -28, 20, 16);
+      ctx.fillStyle = '#ff0000';
+      ctx.font = '5px "Share Tech Mono"';
+      ctx.textAlign = 'center';
+      ctx.fillText('18+', 32, -17);
+      ctx.textAlign = 'left';
+      break;
+    }
+
+    case 7: { // 🎸 Дикий танец
+      const bob  = Math.sin(t * 9) * 5;
+      const tilt = Math.sin(t * 7) * 0.35;
+      ctx.save();
+      ctx.translate(0, bob);
+      ctx.rotate(tilt);
+      drawRat(agent, 0, 0, Math.sin(t * 6) > 0 ? 1 : -1, 1.0);
+      ctx.restore();
+      // Music notes
+      ['♪','♫','♩','♬'].forEach((note, i) => {
+        const nt = (t * 0.9 + i * 0.6) % 3.5;
+        ctx.globalAlpha = Math.max(0, 1 - nt / 3.5);
+        ctx.fillStyle = ['#ff88ff','#88ffcc','#ffcc44','#44aaff'][i];
+        ctx.font = `${10 + i * 2}px serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(note, 22 + Math.sin(nt * 2 + i) * 12, -22 - nt * 14 + bob);
+        ctx.textAlign = 'left';
+      });
+      ctx.globalAlpha = 1;
+      if (Math.sin(t * 11) > 0.6) {
+        spawnParticle(agent.x + rand(-22, 22), agent.y - 8 + bob, rand(-35, 35), rand(-55, -20), 1, '#ff44cc', 2, 12, '★');
+      }
+      break;
+    }
+
+    case 8: { // 🐱 Лазерная указка — стебёт кота-тень
+      drawRat(agent, 0, 0, 1, 0.9);
+      const la = Math.sin(t * 1.8) * 0.9;
+      ctx.strokeStyle = '#ff000080'; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(12, -14);
+      ctx.lineTo(12 + Math.cos(la) * 90, -14 + Math.sin(la) * 45);
+      ctx.stroke();
+      const ldx = 12 + Math.cos(la) * 90;
+      const ldy = -14 + Math.sin(la) * 45;
+      // Laser dot
+      ctx.beginPath();
+      ctx.arc(ldx, ldy, 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff2200';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(ldx, ldy, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff220040';
+      ctx.fill();
+      // Cat shadow chasing the dot
+      const catOff = Math.sin(t * 1.8 - 0.4) * 90;
+      ctx.save();
+      ctx.translate(12 + catOff, -6 + Math.sin(t * 3.5) * 4);
+      ctx.fillStyle = '#00000060';
+      // cat body
+      ctx.beginPath(); ctx.ellipse(0, 0, 9, 6, 0, 0, Math.PI * 2); ctx.fill();
+      // cat head
+      ctx.beginPath(); ctx.ellipse(10, -5, 6, 5, 0, 0, Math.PI * 2); ctx.fill();
+      // ears
+      ctx.beginPath(); ctx.moveTo(7, -9); ctx.lineTo(11, -14); ctx.lineTo(14, -9); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(13, -8); ctx.lineTo(17, -13); ctx.lineTo(20, -8); ctx.fill();
+      ctx.restore();
+      // Rat laughing text
+      if (Math.floor(t * 1.2) % 3 === 0) {
+        ctx.fillStyle = '#ffff00'; ctx.font = '7px "Share Tech Mono"';
+        ctx.textAlign = 'center'; ctx.fillText('кэхе', 0, -30); ctx.textAlign = 'left';
+      }
+      break;
+    }
+
+    case 9: { // 💊 Под одеялом
+      // Blanket lump
+      const blump = Math.sin(t * 2.5) * 3;
+      ctx.fillStyle = '#3355aa';
+      ctx.beginPath();
+      ctx.ellipse(0, 5 + blump * 0.3, 22, 13 + blump, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#2244880';
+      ctx.beginPath();
+      ctx.ellipse(0, 5 + blump * 0.3, 22, 13 + blump, 0, 0, Math.PI);
+      ctx.fillStyle = '#4466cc';
+      ctx.fill();
+      // Small bump (head visible)
+      ctx.fillStyle = '#c8a070';
+      ctx.beginPath();
+      ctx.arc(-14, -3 + blump * 0.5, 6, 0, Math.PI * 2); ctx.fill();
+      // Eyes (closed)
+      ctx.strokeStyle = '#3a2510'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(-17, -4 + blump * 0.5); ctx.lineTo(-15, -3 + blump * 0.5); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-13, -4 + blump * 0.5); ctx.lineTo(-11, -3 + blump * 0.5); ctx.stroke();
+      // Text bubbles ...→😅
+      const stage9 = Math.floor(t * 0.5) % 4;
+      const bubble9 = ['...', '...!', '💦', '😅'][stage9];
+      ctx.fillStyle = '#ffffffcc'; ctx.font = '9px "Share Tech Mono"';
+      ctx.textAlign = 'center'; ctx.fillText(bubble9, 12, -22); ctx.textAlign = 'left';
+      break;
+    }
+
+    case 10: { // 🤢 Рыгает в углу
+      drawRat(agent, -8, 0, 1, 0.85);
+      // Heave animation
+      const heave = Math.sin(t * 4) > 0.5;
+      if (heave) {
+        ctx.save(); ctx.translate(-8, 0); ctx.rotate(-0.2); ctx.restore();
+      }
+      // BUUUURP text cycling
+      const burpStage = Math.floor(t * 0.7) % 5;
+      if (burpStage < 3) {
+        const burpSize = 6 + burpStage * 2;
+        ctx.fillStyle = '#88ff44'; ctx.font = `bold ${burpSize}px "Share Tech Mono"`;
+        ctx.textAlign = 'center';
+        ctx.fillText('BUUUURP', 8 + burpStage * 2, -28 - burpStage * 5);
+        ctx.textAlign = 'left';
+      }
+      // Puddle on floor
+      const pudAmt = Math.min(1, t * 0.05);
+      ctx.fillStyle = `rgba(100,200,50,${0.5 * pudAmt})`;
+      ctx.beginPath(); ctx.ellipse(4, 14, 14 * pudAmt, 5 * pudAmt, 0, 0, Math.PI * 2); ctx.fill();
+      // Green particles drip
+      if (Math.sin(t * 5) > 0.7) {
+        spawnParticle(agent.x - 2, agent.y - 5, rand(-5, 5), rand(10, 25), 0.8, '#88ff44', 3, 8, '●');
+      }
+      break;
+    }
+
+    case 11: { // 💩 За коробками
+      // Boxes
+      ctx.fillStyle = '#8B6914';
+      ctx.fillRect(-22, -10, 18, 22);
+      ctx.fillStyle = '#a07820';
+      ctx.fillRect(-22, -10, 18, 5);
+      ctx.fillStyle = '#7a5c10';
+      ctx.strokeStyle = '#5a3c00'; ctx.lineWidth = 1;
+      ctx.strokeRect(-22, -10, 18, 22);
+      // Rat peeking behind boxes (just eyes + ears)
+      ctx.fillStyle = '#c8a070';
+      ctx.beginPath(); ctx.arc(2, -5, 7, Math.PI * 0.5, Math.PI * 1.5); ctx.fill();
+      // Eyes
+      ctx.fillStyle = '#111';
+      ctx.beginPath(); ctx.arc(1, -8, 1.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(1, -3, 1.5, 0, Math.PI * 2); ctx.fill();
+      // Newspaper
+      ctx.fillStyle = '#ddd';
+      ctx.fillRect(-18, 5, 14, 10);
+      ctx.fillStyle = '#999';
+      ctx.font = '3px "Share Tech Mono"';
+      ctx.fillText('====', -17, 10);
+      ctx.fillText('====', -17, 14);
+      // Gas cloud
+      const gc = (t * 0.6) % 2;
+      if (gc < 1.5) {
+        ctx.globalAlpha = Math.max(0, 1 - gc / 1.5) * 0.5;
+        ctx.fillStyle = '#aaff44';
+        ctx.beginPath(); ctx.arc(12 + gc * 8, -2 + Math.sin(gc * 3) * 4, 6 + gc * 5, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      // Fly
+      const flyX = Math.sin(t * 3.3) * 14;
+      const flyY = -16 + Math.cos(t * 4.1) * 8;
+      ctx.fillStyle = '#333';
+      ctx.font = '8px serif';
+      ctx.textAlign = 'center'; ctx.fillText('🪰', flyX, flyY); ctx.textAlign = 'left';
+      break;
+    }
+
+    case 12: { // 📱 Тупит в телефон
+      drawRat(agent, 0, 0, 1, 0.95);
+      // Phone in paw
+      ctx.fillStyle = '#222'; ctx.strokeStyle = '#555'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.roundRect(10, -18, 12, 20, 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#88ccff';
+      ctx.fillRect(11, -16, 10, 14);
+      // Screen glow
+      ctx.fillStyle = `rgba(100,180,255,${0.15 + Math.sin(t * 2) * 0.1})`;
+      ctx.beginPath(); ctx.arc(16, -8, 14, 0, Math.PI * 2); ctx.fill();
+      // Scroll gesture finger
+      const scrollY = ((t * 30) % 14) - 7;
+      ctx.fillStyle = '#c8a07088';
+      ctx.beginPath(); ctx.arc(16, -9 + scrollY, 2.5, 0, Math.PI * 2); ctx.fill();
+      // ХА ХА bubble
+      if (Math.floor(t * 0.8) % 4 < 2) {
+        ctx.fillStyle = '#ffff44'; ctx.font = 'bold 8px "Share Tech Mono"';
+        ctx.textAlign = 'center'; ctx.fillText('ХА ХА', -8, -28); ctx.textAlign = 'left';
+      }
+      // Show phone to others
+      const showPhase = Math.floor(t * 0.35) % 5;
+      if (showPhase === 4) {
+        ctx.save(); ctx.translate(0, 0); ctx.rotate(-0.6);
+        ctx.fillStyle = '#222'; ctx.strokeStyle = '#555'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(16, -22, 12, 20, 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#88ccff'; ctx.fillRect(17, -20, 10, 14); ctx.restore();
+        ctx.fillStyle = '#fff'; ctx.font = '6px "Share Tech Mono"';
+        ctx.textAlign = 'center'; ctx.fillText('ГЛЯДИ!', 4, -32); ctx.textAlign = 'left';
+      }
+      break;
+    }
+
+    case 13: { // 💤 Спит стоя
+      const fallPhase = Math.floor(t * 0.3) % 4; // 0=sway, 1=falling, 2=floor, 3=getup
+      if (fallPhase === 0) {
+        // Swaying
+        const sway = Math.sin(t * 1.4) * 0.18;
+        ctx.save(); ctx.rotate(sway);
+        drawRat(agent, 0, 0, 1, 1.0);
+        ctx.restore();
+        // Zzz
+        ['z','Z','Z'].forEach((z, i) => {
+          const zt = (t * 0.7 + i * 0.9) % 2.7;
+          ctx.globalAlpha = Math.max(0, 1 - zt / 2.7);
+          ctx.fillStyle = '#aaddff'; ctx.font = `${7 + i * 3}px "Share Tech Mono"`;
+          ctx.textAlign = 'center'; ctx.fillText(z, 14 + i * 5, -20 - zt * 12); ctx.textAlign = 'left';
+        });
+        ctx.globalAlpha = 1;
+      } else if (fallPhase === 1) {
+        // Falling — tilt
+        const fallProg = ((t * 0.3) % 1) * 4 - 1; // 0..1
+        ctx.save(); ctx.rotate(Math.min(1.5, fallProg * 1.8));
+        drawRat(agent, 0, 0, 1, 1.0);
+        ctx.restore();
+      } else if (fallPhase === 2) {
+        // On the floor
+        ctx.save(); ctx.rotate(Math.PI * 0.5);
+        drawRat(agent, 0, 0, 1, 1.0);
+        ctx.restore();
+        ctx.fillStyle = '#ffff00'; ctx.font = '10px serif';
+        ctx.textAlign = 'center'; ctx.fillText('★', -12, -4); ctx.textAlign = 'left';
+      } else {
+        // Getting up
+        const upProg = ((t * 0.3) % 1) * 4 - 3;
+        ctx.save(); ctx.rotate(Math.max(0, (1 - upProg) * 1.5));
+        drawRat(agent, 0, 0, 1, 1.0);
+        ctx.restore();
+      }
+      break;
+    }
+
+    default:
+      drawRat(agent, 0, 0, 1, 1.0);
+      break;
+  }
+}
+
+// ─── DOCTOR RAT NPC ───────────────────────────────────────────────────────────
+function drawDoctor(ctx, x, y, t) {
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.beginPath(); ctx.ellipse(0, 18, 14, 4, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Body — white coat
+  ctx.fillStyle = '#eef2ff';
+  ctx.beginPath(); ctx.ellipse(0, 2, 11, 15, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#b0badd'; ctx.lineWidth = 0.8;
+  ctx.stroke();
+
+  // Coat buttons
+  ctx.fillStyle = '#8899cc';
+  [-4, 2, 8].forEach(yb => {
+    ctx.beginPath(); ctx.arc(0, yb, 1, 0, Math.PI * 2); ctx.fill();
+  });
+
+  // Stethoscope
+  ctx.strokeStyle = '#555'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(-6, -6); ctx.quadraticCurveTo(-14, 2, -9, 10);
+  ctx.stroke();
+  ctx.beginPath(); ctx.arc(-9, 11, 2.5, 0, Math.PI * 2);
+  ctx.fillStyle = '#888'; ctx.fill();
+
+  // Clipboard in paw
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(6, -4, 10, 13);
+  ctx.strokeStyle = '#aaa'; ctx.lineWidth = 0.5;
+  ctx.strokeRect(6, -4, 10, 13);
+  ctx.fillStyle = '#8899cc';
+  ctx.fillRect(8, -1, 6, 1.5);
+  ctx.fillRect(8, 3, 6, 1.5);
+  ctx.fillRect(8, 7, 4, 1.5);
+
+  // Head
+  ctx.fillStyle = '#c8a070';
+  ctx.beginPath(); ctx.arc(0, -18, 12, 0, Math.PI * 2); ctx.fill();
+
+  // Doctor cap (mirror cap)
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(-10, -27, 20, 6);
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 0.5; ctx.strokeRect(-10, -27, 20, 6);
+  // Reflector disc
+  ctx.fillStyle = '#ddd';
+  ctx.beginPath(); ctx.arc(0, -24, 5, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#aaa'; ctx.lineWidth = 0.5; ctx.stroke();
+  ctx.fillStyle = '#eee';
+  ctx.beginPath(); ctx.arc(0, -24, 2, 0, Math.PI * 2); ctx.fill();
+
+  // Ears
+  ctx.fillStyle = '#b88060';
+  ctx.beginPath(); ctx.arc(-13, -20, 4, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(13, -20, 4, 0, Math.PI * 2); ctx.fill();
+
+  // Eyes
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(-4, -19, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -19, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#3a2510';
+  ctx.beginPath(); ctx.arc(-4, -19, 1.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -19, 1.5, 0, Math.PI * 2); ctx.fill();
+  // Pupils glint
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(-3.2, -19.8, 0.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4.8, -19.8, 0.5, 0, Math.PI * 2); ctx.fill();
+
+  // Nose
+  ctx.fillStyle = '#d4746a';
+  ctx.beginPath(); ctx.arc(0, -16, 2, 0, Math.PI * 2); ctx.fill();
+
+  // Whiskers
+  ctx.strokeStyle = '#9a7a5088'; ctx.lineWidth = 0.8;
+  [[-12, -15], [-14, -17], [-12, -19]].forEach(([wx, wy]) => {
+    ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(wx, wy); ctx.stroke();
+  });
+  [[12, -15], [14, -17], [12, -19]].forEach(([wx, wy]) => {
+    ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(wx, wy); ctx.stroke();
+  });
+
+  // Legs / idle bob
+  const bob = Math.sin(t * 1.5) * 1.5;
+  ctx.fillStyle = '#dde4ff';
+  ctx.beginPath(); ctx.ellipse(-5, 16 + bob, 4, 5, -0.2, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(5, 16 - bob, 4, 5, 0.2, 0, Math.PI * 2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ─── AMBULANCE ANIMATION ──────────────────────────────────────────────────────
+function drawAmbulance(ctx, state, t, canvasW, canvasH) {
+  if (!state.ambulance) return;
+  const amb = state.ambulance;
+
+  // Drive in from right, stop at center, wait, drive out left
+  const DRIVE_DUR = 2.0;
+  const WAIT_DUR  = 3.5;
+  const LEAVE_DUR = 2.0;
+  const TOTAL     = DRIVE_DUR + WAIT_DUR + LEAVE_DUR;
+  const elapsed   = (Date.now() - amb.startTime) / 1000;
+
+  if (elapsed > TOTAL) {
+    delete state.ambulance;
+    return;
+  }
+
+  const cx = canvasW / 2;
+  const cy = canvasH - 80;
+
+  let ambX;
+  if (elapsed < DRIVE_DUR) {
+    // Drive in from right
+    const prog = elapsed / DRIVE_DUR;
+    ambX = canvasW + 90 - prog * (canvasW / 2 + 90);
+  } else if (elapsed < DRIVE_DUR + WAIT_DUR) {
+    ambX = cx;
+  } else {
+    // Drive out to left
+    const prog = (elapsed - DRIVE_DUR - WAIT_DUR) / LEAVE_DUR;
+    ambX = cx - prog * (cx + 90);
+  }
+
+  ctx.save();
+  ctx.translate(ambX, cy);
+
+  // Wheels
+  ctx.fillStyle = '#333';
+  [-38, 28].forEach(wx => {
+    ctx.beginPath(); ctx.arc(wx, 22, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#888'; ctx.beginPath(); ctx.arc(wx, 22, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#333';
+  });
+
+  // Body
+  ctx.fillStyle = '#f0f0f0';
+  ctx.beginPath(); ctx.roundRect(-55, -30, 110, 50, 6); ctx.fill();
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1; ctx.stroke();
+
+  // Red stripe
+  ctx.fillStyle = '#ee2222';
+  ctx.fillRect(-55, -5, 110, 14);
+
+  // Red cross
+  ctx.fillStyle = '#ee2222';
+  ctx.fillRect(-8, -26, 16, 16);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(-3, -26, 6, 16);
+  ctx.fillRect(-8, -22, 16, 6);
+
+  // Windows
+  ctx.fillStyle = '#88ccff99';
+  ctx.beginPath(); ctx.roundRect(20, -26, 28, 16, 3); ctx.fill();
+  ctx.strokeStyle = '#aaa'; ctx.lineWidth = 0.5; ctx.stroke();
+  // Doctor silhouette in window
+  ctx.fillStyle = '#ffffff88';
+  ctx.beginPath(); ctx.ellipse(34, -18, 7, 9, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Siren lights (flashing)
+  const sirenFlash = Math.floor(t * 6) % 2;
+  ctx.fillStyle = sirenFlash ? '#ff2200' : '#002299';
+  ctx.beginPath(); ctx.roundRect(-50, -36, 14, 8, 3); ctx.fill();
+  ctx.fillStyle = sirenFlash ? '#002299' : '#ff2200';
+  ctx.beginPath(); ctx.roundRect(-34, -36, 14, 8, 3); ctx.fill();
+
+  // Siren glow
+  if (sirenFlash) {
+    ctx.fillStyle = 'rgba(255,34,0,0.12)';
+    ctx.beginPath(); ctx.arc(-43, -32, 30, 0, Math.PI * 2); ctx.fill();
+  } else {
+    ctx.fillStyle = 'rgba(0,34,200,0.12)';
+    ctx.beginPath(); ctx.arc(-27, -32, 30, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // СКОРАЯ text
+  ctx.fillStyle = '#ee2222';
+  ctx.font = 'bold 9px "Share Tech Mono"';
+  ctx.textAlign = 'center'; ctx.fillText('СКОРАЯ', 0, 5); ctx.textAlign = 'left';
+
+  // Bouncy suspension
+  const bounce = Math.abs(Math.sin(t * 8)) * 2;
+  ctx.translate(0, bounce);
+
+  ctx.restore();
+}
+// ============================================================
+// TRIGGER DOCTOR / AMBULANCE NPC
+// ============================================================
+function triggerDoctor(agentIdx) {
+  if (doctor.active) return;
+  const agent = agents[agentIdx];
+  if (!agent) return;
+  doctor.active = true;
+  doctor.targetAgentIdx = agentIdx;
+  doctor.phase = 'running-in';
+  doctor.t = 0;
+  doctor.healTimer = 0;
+  doctor.x = -80;
+  doctor.y = agent.y;
+}
+
+function triggerAmbulance(agentIdx) {
+  if (ambulance.active) return;
+  const agent = agents[agentIdx];
+  if (!agent) return;
+  ambulance.active = true;
+  ambulance.targetAgentIdx = agentIdx;
+  ambulance.phase = 'driving-in';
+  ambulance.t = 0;
+  ambulance.startTime = Date.now();
+  ambulance.x = W + 250;
+  ambulance.y = agent.y;
+}
+
+// ============================================================
+// DRAW HEADER UI
+// ============================================================
+function drawHeader(ctx, w, h) {
+  const HH = 58;
+  const t = performance.now() / 1000;
+
+  // Panel background
+  ctx.fillStyle = 'rgba(0,20,10,0.92)';
+  ctx.fillRect(0, 0, w, HH);
+
+  // Bottom border glow
+  const borderGrad = ctx.createLinearGradient(0, HH - 1, w, HH - 1);
+  borderGrad.addColorStop(0,   'rgba(0,255,136,0)');
+  borderGrad.addColorStop(0.3, 'rgba(0,255,136,0.5)');
+  borderGrad.addColorStop(0.7, 'rgba(0,255,136,0.5)');
+  borderGrad.addColorStop(1,   'rgba(0,255,136,0)');
+  ctx.fillStyle = borderGrad;
+  ctx.fillRect(0, HH - 1, w, 1);
+
+  // === LOGO ===
+  const logoGlow = 0.65 + Math.sin(t * 2.3) * 0.35;
+  ctx.save();
+  ctx.font = "bold 17px 'Orbitron', sans-serif";
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = '#00ff88';
+  ctx.shadowBlur = Math.round(20 * logoGlow);
+  ctx.fillStyle = `rgba(0,${Math.round(200 + 55 * logoGlow)},${Math.round(80 + 56 * logoGlow)},1)`;
+  ctx.fillText('🐀 КРЫСИНАЯ НОРА', 14, HH / 2);
+  ctx.restore();
+
+  // === STATUS COUNTERS ===
+  const counts = { working: 0, running: 0, idle: 0, sleeping: 0, done: 0, error: 0, dead: 0 };
+  agents.forEach(a => { if (counts[a.status] !== undefined) counts[a.status]++; });
+  const active = counts.working + counts.running;
+
+  const badges = [
+    { emoji: '⚡', text: `${active} РАБОТАЮТ`,   color: '#00ff88' },
+    { emoji: '🧀', text: `${counts.idle + counts.done} ЖУЮТ`,      color: '#ffaa00' },
+    { emoji: '💤', text: `${counts.sleeping} СПЯТ`,       color: '#4488ff' },
+    { emoji: '💀', text: `${counts.dead} УПАЛИ`,       color: '#ff2244' },
+  ];
+
+  let bx = 252;
+  badges.forEach(b => {
+    ctx.font = "11px 'Share Tech Mono', monospace";
+    ctx.textBaseline = 'middle';
+    const label = `${b.emoji} ${b.text}`;
+    const tw = ctx.measureText(label).width + 16;
+
+    // Badge background
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    drawRoundRect(bx, (HH - 24) / 2, tw, 24, 4);
+    ctx.fill();
+    ctx.strokeStyle = b.color + '50';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Badge text
+    ctx.save();
+    ctx.shadowColor = b.color;
+    ctx.shadowBlur = 5;
+    ctx.fillStyle = b.color;
+    ctx.fillText(label, bx + 8, HH / 2);
+    ctx.restore();
+
+    bx += tw + 6;
+  });
+
+  // === PROVIDER TOKEN METERS ===
+  const providers = ['anthropic', 'openai', 'gemini', 'elevenlabs', 'vapi'];
+  const labels    = ['ANTH',     'OPAI',   'GEMN',   '11LB',       'VAPI' ];
+  const mW = 56, mH = 7, mGap = 74;
+  let mx = w - providers.length * mGap - 64;
+
+  providers.forEach((p, i) => {
+    const data  = providerTokens[p];
+    const color = PROVIDER_COLORS[p];
+    const used  = clamp(data.used, 0, 1);
+    const cx    = mx + mW / 2;
+
+    // Provider label
+    ctx.font = "8px 'Share Tech Mono', monospace";
+    ctx.fillStyle = color + 'aa';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(labels[i], cx, HH / 2 - 11);
+
+    // Bar track
+    ctx.fillStyle = 'rgba(255,255,255,0.07)';
+    drawRoundRect(mx, HH / 2 - 3, mW, mH, 2);
+    ctx.fill();
+
+    // Bar fill (warn colours)
+    const fillCol = used > 0.85 ? '#ff2244' : used > 0.65 ? '#ffaa00' : color;
+    ctx.save();
+    ctx.shadowColor = fillCol;
+    ctx.shadowBlur  = 5;
+    ctx.fillStyle   = fillCol;
+    const fw = Math.max(3, mW * used);
+    drawRoundRect(mx, HH / 2 - 3, fw, mH, 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Percent
+    ctx.font = "7px 'Share Tech Mono', monospace";
+    ctx.fillStyle = '#ffffff55';
+    ctx.fillText(`${Math.round(used * 100)}%`, cx, HH / 2 + 12);
+
+    mx += mGap;
+  });
+
+  // === LIVE DOT ===
+  const isConn  = true; // demo always "connected"
+  const pulse   = 0.6 + Math.sin(t * 3.1) * 0.4;
+  const dotCol  = isConn ? '#00ff88' : '#ff2244';
+  const dotX    = w - 30;
+  const dotY    = HH / 2;
+
+  // Outer ring
+  ctx.beginPath();
+  ctx.arc(dotX, dotY, 5 + pulse * 5, 0, Math.PI * 2);
+  ctx.strokeStyle = dotCol + '50';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Dot
+  ctx.save();
+  ctx.shadowColor = dotCol;
+  ctx.shadowBlur  = 14 * pulse;
+  ctx.fillStyle   = dotCol;
+  ctx.beginPath();
+  ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.font = "9px 'Share Tech Mono', monospace";
+  ctx.fillStyle = dotCol;
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(isConn ? 'LIVE' : 'OFFLINE', dotX - 12, dotY);
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+}
+
+// ============================================================
+// DRAW TICKER (scrolling news bar)
+// ============================================================
+function drawTicker(ctx, w, h, t) {
+  const TH = 28;
+  const ty = h - TH;
+
+  // Strip background
+  ctx.fillStyle = 'rgba(0,10,5,0.90)';
+  ctx.fillRect(0, ty, w, TH);
+
+  // Top border
+  const tGrad = ctx.createLinearGradient(0, ty, w, ty);
+  tGrad.addColorStop(0,   'rgba(0,255,136,0)');
+  tGrad.addColorStop(0.2, 'rgba(0,255,136,0.25)');
+  tGrad.addColorStop(0.8, 'rgba(0,255,136,0.25)');
+  tGrad.addColorStop(1,   'rgba(0,255,136,0)');
+  ctx.fillStyle = tGrad;
+  ctx.fillRect(0, ty, w, 1);
+
+  // Clip to ticker area
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(72, ty, w - 72, TH);
+  ctx.clip();
+
+  ctx.font = "11px 'Share Tech Mono', monospace";
+  const fullText = tickerText;
+  const tw = ctx.measureText(fullText).width;
+
+  // Scroll offset updated in render loop
+  const drawX = 72 + (w - 72) - tickerOffset;
+
+  ctx.save();
+  ctx.shadowColor = '#00ff88';
+  ctx.shadowBlur  = 8;
+  ctx.fillStyle   = '#00cc66';
+  ctx.textAlign   = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(fullText, drawX, ty + TH / 2);
+  // Second copy for seamless loop
+  ctx.fillText(fullText, drawX + tw + 60, ty + TH / 2);
+  ctx.restore();
+
+  ctx.restore(); // unclip
+
+  // "НОРА LIVE" label badge
+  ctx.fillStyle = '#00ff88';
+  ctx.fillRect(0, ty, 70, TH);
+  ctx.save();
+  ctx.font = "bold 8px 'Orbitron', sans-serif";
+  ctx.fillStyle = '#000';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('НОРА LIVE', 35, ty + TH / 2);
+  ctx.restore();
+  ctx.textBaseline = 'alphabetic';
+}
+
+// ============================================================
+// POPUP
+// ============================================================
+function showPopup(agent) {
+  selectedAgent = agent;
+  const popup   = document.getElementById('popup');
+  const content = document.getElementById('popup-content');
+  const aura    = agent.def.aura  || '#00ff88';
+  const sc      = COLORS[agent.status] || '#888';
+  const pCol    = PROVIDER_COLORS[agent.provider] || '#aaa';
+
+  popup.style.borderColor = aura;
+  popup.style.boxShadow   = `0 0 30px ${aura}44, inset 0 0 20px rgba(0,0,0,0.5)`;
+
+  const up    = Math.floor(agent.uptime_seconds);
+  const upStr = up < 60   ? `${up}с`
+              : up < 3600 ? `${Math.floor(up/60)}м ${up%60}с`
+              :              `${Math.floor(up/3600)}ч ${Math.floor((up%3600)/60)}м`;
+
+  const ago  = Math.floor((Date.now() - agent.updated_at) / 1000);
+  const agoS = ago < 60   ? `${ago} сек назад`
+             : ago < 3600 ? `${Math.floor(ago/60)} мин назад`
+             :               `${Math.floor(ago/3600)} ч назад`;
+
+  const tokPct  = Math.round(clamp(agent.tokens_used / agent.tokens_limit, 0, 1) * 100);
+  const tokFill = tokPct > 85 ? '#ff2244' : tokPct > 65 ? '#ffaa00' : aura;
+
+  content.innerHTML = `
+    <h2 style="color:${aura};text-shadow:0 0 10px ${aura}66;margin-bottom:4px;">
+      ${agent.def.name}
+      <span style="font-size:11px;color:#555;font-family:'Share Tech Mono',monospace;">#${agent.def.id}</span>
+    </h2>
+    <div style="color:#666;font-size:11px;margin-bottom:12px;font-family:'Share Tech Mono',monospace;">${agent.def.role}</div>
+    <div class="stat"><span class="stat-label">Модель</span>
+      <span style="color:#ccc;">${agent.model}</span></div>
+    <div class="stat"><span class="stat-label">Провайдер</span>
+      <span style="color:${pCol};">${agent.provider.toUpperCase()}</span></div>
+    <div class="stat"><span class="stat-label">Статус</span>
+      <span style="color:${sc};">${agent.status.toUpperCase()}</span></div>
+    <div class="stat"><span class="stat-label">Аптайм</span>
+      <span style="color:#aaa;">${upStr}</span></div>
+    <div class="stat"><span class="stat-label">Коммиты</span>
+      <span style="color:#aaa;">${agent.commits}</span></div>
+    <div class="stat"><span class="stat-label">Задача</span>
+      <span style="color:#ccc;max-width:160px;text-align:right;word-break:break-word;">${agent.task || '—'}</span></div>
+    <div class="stat"><span class="stat-label">Обновлён</span>
+      <span style="color:#555;">${agoS}</span></div>
+    <div style="margin-top:12px;font-size:10px;color:#555;font-family:'Share Tech Mono',monospace;">
+      ТОКЕНЫ: ${agent.tokens_used.toLocaleString()} / ${agent.tokens_limit.toLocaleString()} (${tokPct}%)
+    </div>
+    <div class="token-bar">
+      <div class="token-fill" style="width:${tokPct}%;background:${tokFill};box-shadow:0 0 8px ${tokFill}88;"></div>
+    </div>
+  `;
+
+  // Position near agent, clamped to viewport
+  const px = Math.min(Math.max(agent.x + 20, 10), W - 350);
+  const py = Math.min(Math.max(agent.y - 130, 68), H - 390);
+  popup.style.left    = px + 'px';
+  popup.style.top     = py + 'px';
+  popup.style.display = 'block';
+}
+
+function hidePopup() {
+  selectedAgent = null;
+  document.getElementById('popup').style.display = 'none';
+}
+
+// alias used by the close button onclick
+function closePopup() { hidePopup(); }
+
+// ============================================================
+// SUPABASE REALTIME (DEMO_MODE = false)
+// ============================================================
+let supabaseClient   = null;
+let supabasePollId   = null;
+
+function applyAgentRow(row) {
+  if (!row || !row.agent_id) return;
+  const ag = agents.find(a => a.def.id === row.agent_id);
+  if (!ag) return;
+  if (row.status)       ag.status       = row.status;
+  if (row.task)         ag.task         = row.task;
+  if (row.tokens_used != null) ag.tokens_used = row.tokens_used;
+  if (row.commits != null)     ag.commits     = row.commits;
+  ag.updated_at = row.updated_at ? new Date(row.updated_at).getTime() : Date.now();
+}
+
+function startSupabasePoll() {
+  if (supabasePollId) return;
+  supabasePollId = setInterval(async () => {
+    if (!supabaseClient) return;
+    try {
+      const { data: agRows } = await supabaseClient.from('agent_status').select('*');
+      if (agRows) agRows.forEach(applyAgentRow);
+      const { data: tkRows } = await supabaseClient.from('provider_tokens').select('*');
+      if (tkRows) tkRows.forEach(row => {
+        if (providerTokens[row.provider])
+          providerTokens[row.provider].used = clamp(row.used_ratio, 0, 1);
+      });
+    } catch (e) { console.warn('[НОРА] Supabase poll error:', e); }
+  }, 30000);
+}
+
+function initSupabase() {
+  if (typeof supabase === 'undefined') {
+    console.warn('[НОРА] Supabase SDK unavailable — using poll fallback');
+    startSupabasePoll();
+    return;
+  }
+  try {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    supabaseClient
+      .channel('nora-agent-status')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'agent_status' },
+          pl => applyAgentRow(pl.new))
+      .subscribe(st => {
+        if (st === 'SUBSCRIBED') console.log('[НОРА] Realtime: agent_status OK');
+      });
+
+    supabaseClient
+      .channel('nora-provider-tokens')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'provider_tokens' },
+          pl => {
+            const r = pl.new;
+            if (r && providerTokens[r.provider])
+              providerTokens[r.provider].used = clamp(r.used_ratio, 0, 1);
+          })
+      .subscribe();
+
+    startSupabasePoll(); // 30s fallback alongside realtime
+  } catch (err) {
+    console.error('[НОРА] Supabase init failed:', err);
+    startSupabasePoll();
+  }
+}
+
+// ============================================================
+// EASTER EGG — CHEESE CLICKS
+// ============================================================
+function handleCheeseClick() {
+  cheeseClicks++;
+  cheeseClickTimer = 5; // 5-sec window to get 3 clicks
+  if (cheeseClicks >= 3) {
+    cheeseClicks    = 0;
+    cheeseClickTimer = 0;
+    easterEggActive = true;
+    easterEggTimer  = 5;
+    agents.forEach(a => { a.isDancing = true; a.danceT = 0; });
+    const bp = getBurrowPositions();
+    for (let i = 0; i < 40; i++) {
+      spawnParticle(
+        bp.cheese.x, bp.cheese.y,
+        rand(-90, 90), rand(-110, -20), 2.8,
+        pick(['#ffcc00','#ff88ff','#00ffcc','#ff4444','#ffffff']),
+        rand(3, 7), 18, pick(['★','✦','◆','♪'])
+      );
+    }
+    addFloatingText(W * 0.75, H * 0.45, '🎉 ТАНЦУЮТ ВСЕ!', '#ffcc00', 22);
+  }
+}
+
+// ============================================================
+// CANVAS CLICK HANDLER
+// ============================================================
+function handleCanvasClick(e) {
+  const rect  = canvas.getBoundingClientRect();
+  const scaleX = canvas.width  / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX / DPR;
+  const my = (e.clientY - rect.top)  * scaleY / DPR;
+
+  // Cheese easter egg (click on cheese in burrow)
+  const bp = getBurrowPositions();
+  if (dist(mx, my, bp.cheese.x, bp.cheese.y) < 28) {
+    handleCheeseClick();
+    return;
+  }
+
+  // Agent click — find closest within 44px
+  let best  = null;
+  let bestD = 44;
+  agents.forEach(ag => {
+    const d = dist(mx, my, ag.x, ag.y);
+    if (d < bestD) { bestD = d; best = ag; }
+  });
+  if (best) showPopup(best);
+  else       hidePopup();
+}
+
+// ============================================================
+// MAIN RENDER LOOP
+// ============================================================
+function render(timestamp) {
+  requestAnimationFrame(render);
+
+  // Delta time (capped at 100ms to avoid spiral of death)
+  if (!lastTime) lastTime = timestamp;
+  deltaTime = Math.min((timestamp - lastTime) / 1000, 0.1);
+  lastTime  = timestamp;
+  frameCount++;
+
+  // Update simulation
+  if (DEMO_MODE) updateDemoMode(deltaTime);
+
+  // Advance ticker scroll
+  tickerOffset += 55 * deltaTime;
+  ctx.font = "11px 'Share Tech Mono', monospace";
+  const fullTickerW = ctx.measureText(tickerText).width;
+  if (tickerOffset > fullTickerW + 80) tickerOffset = 0;
+
+  // ── CLEAR ────────────────────────────────────────────────
+  ctx.clearRect(0, 0, W, H);
+
+  // ── BACKGROUNDS ──────────────────────────────────────────
+  drawBackground();
+  drawWallHole();
+
+  // ── SCENE DECORATIONS ────────────────────────────────────
+  drawOfficeDecorations();
+  drawBurrowDecorations();
+
+  // ── AGENTS ───────────────────────────────────────────────
+  agents.forEach((agent, idx) => {
+    if (agent.status === 'dead') return; // handled by ambulance
+
+    const inBurrow = ['idle', 'done', 'sleeping', 'reserve'].includes(agent.status);
+
+    if (easterEggActive || agent.isDancing) {
+      // ── DANCE ANIMATION ──
+      ctx.save();
+      ctx.translate(agent.x, agent.y);
+      const dBob  = Math.sin(agent.danceT * 9)  * 5;
+      const dTilt = Math.sin(agent.danceT * 7)  * 0.38;
+      ctx.save();
+      ctx.translate(0, dBob);
+      ctx.rotate(dTilt);
+      drawRat(agent, 0, 0, Math.sin(agent.danceT * 6) > 0 ? 1 : -1, 1.0);
+      ctx.restore();
+      // Music notes
+      ['♪','♫','♩','♬'].forEach((note, ni) => {
+        const nt = (agent.danceT * 0.9 + ni * 0.6) % 3.5;
+        ctx.globalAlpha = Math.max(0, 1 - nt / 3.5);
+        ctx.fillStyle = ['#ff88ff','#88ffcc','#ffcc44','#44aaff'][ni];
+        ctx.font = `${10 + ni * 2}px serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(note, 22 + Math.sin(nt * 2 + ni) * 12, -22 - nt * 14 + dBob);
+        ctx.textAlign = 'left';
+      });
+      ctx.globalAlpha = 1;
+      ctx.restore();
+
+    } else if (inBurrow && agent.idleActivity >= 0) {
+      // drawIdleActivity handles its own ctx.translate(agent.x, agent.y)
+      drawIdleActivity(agent);
+
+    } else {
+      // ── WORKING / RUNNING in office ──
+      ctx.save();
+      ctx.translate(agent.x, agent.y);
+      drawRat(agent, 0, 0, agent.facing, 1.0);
+      ctx.restore();
+    }
+
+    // ── STATUS DOT ──
+    const sc = COLORS[agent.status] || '#888';
+    ctx.save();
+    ctx.translate(agent.x, agent.y);
+    ctx.shadowColor = sc;
+    ctx.shadowBlur  = 10;
+    ctx.fillStyle   = sc;
+    ctx.beginPath();
+    ctx.arc(0, -40, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // ── NAME LABEL ──
+    ctx.font = "9px 'Share Tech Mono', monospace";
+    ctx.fillStyle    = '#ffffff80';
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(agent.def.name, 0, -46);
+    ctx.textBaseline = 'alphabetic';
+    ctx.restore();
+
+    // ── ERROR PARTICLES ──
+    if (agent.status === 'error') {
+      agent.errorParticleTimer -= deltaTime;
+      if (agent.errorParticleTimer <= 0) {
+        agent.errorParticleTimer = 0.18;
+        spawnParticle(agent.x + rand(-12, 12), agent.y - 20,
+          rand(-22, 22), rand(-45, -10), 1.6, '#ff2244', 2, 8, '!');
+      }
+    }
+  });
+
+  // ── DOCTOR NPC ───────────────────────────────────────────
+  if (doctor.active) {
+    doctor.t += deltaTime;
+    const tgt = doctor.targetAgentIdx >= 0 ? agents[doctor.targetAgentIdx] : null;
+
+    if (doctor.phase === 'running-in') {
+      if (tgt) {
+        const dx = (tgt.x - 45) - doctor.x;
+        if (Math.abs(dx) > 4) {
+          doctor.x += Math.sign(dx) * 160 * deltaTime;
+          doctor.y  = tgt.y;
+        } else {
+          doctor.phase    = 'treating';
+          doctor.healTimer = 3.5;
+        }
+      }
+    } else if (doctor.phase === 'treating') {
+      doctor.healTimer -= deltaTime;
+      if (doctor.healTimer <= 0 && tgt) {
+        const prev = tgt.status;
+        tgt.status    = prev === 'dead' ? 'dead' : 'idle';
+        tgt.needsDoctor = false;
+        addFloatingText(tgt.x, tgt.y - 36, '+HP 💉', '#00ff88', 15);
+        spawnParticle(tgt.x, tgt.y - 20, rand(-30, 30), rand(-60, -20), 2, '#00ff88', 3, 10, '+');
+        doctor.phase = 'running-out';
+      }
+    } else if (doctor.phase === 'running-out') {
+      doctor.x -= 190 * deltaTime;
+      if (doctor.x < -90) {
+        doctor.active = false;
+        doctor.phase  = 'idle';
+        doctor.targetAgentIdx = -1;
+      }
+    }
+
+    drawDoctor(ctx, doctor.x, doctor.y - 22, doctor.t);
+  }
+
+  // ── AMBULANCE ────────────────────────────────────────────
+  if (ambulance.active) {
+    ambulance.t += deltaTime;
+    const ambState = { ambulance: { startTime: ambulance.startTime } };
+    drawAmbulance(ctx, ambState, ambulance.t, W, H);
+    if (!ambState.ambulance) {
+      // Ambulance drove away — mark agent as gone
+      ambulance.active = false;
+      ambulance.phase  = 'idle';
+    }
+  }
+
+  // ── PARTICLES & FLOATING TEXT ────────────────────────────
+  updateParticles(deltaTime);
+  drawParticles();
+  updateFloatingTexts(deltaTime);
+  drawFloatingTexts();
+
+  // ── CRT SCANLINES ────────────────────────────────────────
+  drawScanlines();
+
+  // ── HUD (on top of everything) ───────────────────────────
+  drawHeader(ctx, W, H);
+  drawTicker(ctx, W, H, timestamp / 1000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = function () {
+  resize();
+
+  if (DEMO_MODE) {
+    initDemoMode();
+  } else {
+    initSupabase();
+    // Place agents at their desks initially
+    agents.forEach((agent, idx) => {
+      const pos = getOfficePos(agent.deskIdx);
+      agent.x = agent.targetX = pos.x;
+      agent.y = agent.targetY = pos.y;
+    });
+  }
+
+  // Canvas interaction
+  canvas.addEventListener('click', handleCanvasClick);
+
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = (e.clientX - rect.left) * (canvas.width  / rect.width)  / DPR;
+    mouseY = (e.clientY - rect.top)  * (canvas.height / rect.height) / DPR;
+  });
+
+  // Close popup when clicking outside it
+  document.addEventListener('click', e => {
+    const popup = document.getElementById('popup');
+    if (popup.style.display !== 'none'
+        && !popup.contains(e.target)
+        && e.target !== canvas) {
+      hidePopup();
+    }
+  });
+
+  // Re-init on resize
+  window.addEventListener('resize', () => {
+    resize();
+    if (DEMO_MODE) initDemoMode();
+  });
+
+  // 🚀 Start the loop
+  requestAnimationFrame(render);
+};
+</script>
+</body>
+</html>
