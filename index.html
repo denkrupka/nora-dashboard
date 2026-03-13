@@ -204,6 +204,98 @@ function drawFloatingTexts() {
 }
 
 // ============================================================
+// FLYING PACKETS (task transfer animation)
+// ============================================================
+const flyingPackets = []; // {fromIdx, toIdx, progress, duration, color, taskType}
+const MAX_FLYING_PACKETS = 5;
+const PACKET_TASK_TYPES = ['code', 'review', 'deploy', 'research', 'design', 'test'];
+
+function spawnPacket(fromAgentId, toAgentId, taskType) {
+  if (flyingPackets.length >= MAX_FLYING_PACKETS) return;
+  const fromIdx = agents.findIndex(a => a.def.id === fromAgentId);
+  const toIdx   = agents.findIndex(a => a.def.id === toAgentId);
+  if (fromIdx < 0 || toIdx < 0 || fromIdx === toIdx) return;
+  const fromAgent = agents[fromIdx];
+  const auraColor = fromAgent.def.aura || '#00ff88';
+  flyingPackets.push({
+    fromIdx, toIdx,
+    fromX: fromAgent.x, fromY: fromAgent.y,
+    toX: agents[toIdx].x, toY: agents[toIdx].y,
+    progress: 0,
+    duration: 0.8,
+    color: auraColor,
+    taskType: taskType || 'task'
+  });
+}
+
+function updatePackets(dt) {
+  for (let i = flyingPackets.length - 1; i >= 0; i--) {
+    const p = flyingPackets[i];
+    // Update positions (agents may move)
+    p.fromX = agents[p.fromIdx].x;
+    p.fromY = agents[p.fromIdx].y;
+    p.toX = agents[p.toIdx].x;
+    p.toY = agents[p.toIdx].y;
+    p.progress += dt / p.duration;
+    if (p.progress >= 1.0) {
+      flyingPackets.splice(i, 1);
+      // Flash on arrival
+      const target = agents[p.toIdx];
+      addFloatingText(target.x, target.y - 30, '📦 ' + p.taskType, p.color, 10);
+      // Burst particles at landing
+      for (let j = 0; j < 8; j++) {
+        spawnParticle(
+          target.x, target.y - 10,
+          rand(-60, 60), rand(-80, -20),
+          1.2, p.color, rand(2, 5), 20
+        );
+      }
+    }
+  }
+}
+
+function drawPackets(ctx) {
+  flyingPackets.forEach(p => {
+    const t = p.progress;
+    const x = lerp(p.fromX, p.toX, t);
+    const y = lerp(p.fromY, p.toY, t) - Math.sin(Math.PI * t) * 80;
+
+    // Trail (4 fading spheres behind)
+    for (let ti = 1; ti <= 4; ti++) {
+      const tt = Math.max(0, t - ti * 0.05);
+      const tx = lerp(p.fromX, p.toX, tt);
+      const ty = lerp(p.fromY, p.toY, tt) - Math.sin(Math.PI * tt) * 80;
+      ctx.globalAlpha = 0.3 - ti * 0.06;
+      ctx.beginPath();
+      ctx.arc(tx, ty, 4 - ti * 0.5, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Glow
+    ctx.save();
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = p.color;
+
+    // Main sphere
+    ctx.beginPath();
+    ctx.arc(x, y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+
+    ctx.restore();
+
+    // Task type label
+    ctx.font = "8px 'Share Tech Mono', monospace";
+    ctx.fillStyle = p.color;
+    ctx.textAlign = 'center';
+    ctx.fillText(p.taskType, x, y - 12);
+    ctx.textAlign = 'left';
+  });
+}
+
+// ============================================================
 // AGENT DATA DEFINITIONS
 // ============================================================
 const AGENT_DEFS = [
@@ -3088,6 +3180,8 @@ const SAMPLE_TASKS = [
 let demoStatusTimer = 0;
 let demoIdleTimer   = 0;
 let demoTokenTimer  = 0;
+let demoPacketTimer = 0;
+let demoPacketInterval = rand(3, 5);
 
 function initDemoMode() {
   const statuses = ['working', 'working', 'running', 'idle', 'sleeping', 'error',
@@ -3112,6 +3206,7 @@ function updateDemoMode(dt) {
   demoIdleTimer   += dt;
   demoTokenTimer  += dt;
   tickerAddTimer  += dt;
+  demoPacketTimer += dt;
 
   // Every 4s: one random agent changes status
   if (demoStatusTimer >= 4) {
@@ -3123,6 +3218,10 @@ function updateDemoMode(dt) {
     agent.status = nextStatus;
     agent.task   = pick(SAMPLE_TASKS);
     agent.updated_at = Date.now();
+    // Spawn packet from Шнырь when agent starts working
+    if (nextStatus === 'working' && agent.def.id !== 'shnyr') {
+      spawnPacket('shnyr', agent.def.id, pick(PACKET_TASK_TYPES));
+    }
     // Wake-up bounce когда просыпается
     if (prevStatus === 'sleeping' && nextStatus !== 'sleeping') {
       agent.wakeUpBounceStart = performance.now() / 1000;
@@ -3212,6 +3311,16 @@ function updateDemoMode(dt) {
       }
     }
   });
+
+  // Random flying packets every 3-5 seconds
+  if (demoPacketTimer >= demoPacketInterval) {
+    demoPacketTimer = 0;
+    demoPacketInterval = rand(3, 5);
+    const fromIdx = randInt(0, agents.length - 1);
+    let toIdx = randInt(0, agents.length - 2);
+    if (toIdx >= fromIdx) toIdx++;
+    spawnPacket(agents[fromIdx].def.id, agents[toIdx].def.id, pick(PACKET_TASK_TYPES));
+  }
 
   // Easter egg timer
   cheeseClickTimer = Math.max(0, cheeseClickTimer - dt);
@@ -4329,6 +4438,16 @@ function initSupabase() {
           })
       .subscribe();
 
+    // Task flow packets (realtime task transfers between agents)
+    supabaseClient
+      .channel('task_flow')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'task_flow' },
+          (payload) => {
+            const { from_agent, to_agent, task_type } = payload.new;
+            spawnPacket(from_agent, to_agent, task_type || 'task');
+          })
+      .subscribe();
+
     startSupabasePoll(); // 30s fallback alongside realtime
   } catch (err) {
     console.error('[НОРА] Supabase init failed:', err);
@@ -4768,6 +4887,10 @@ function render(timestamp) {
   drawParticles();
   updateFloatingTexts(deltaTime);
   drawFloatingTexts();
+
+  // ── FLYING PACKETS (task transfer) ───────────────────────
+  updatePackets(deltaTime);
+  drawPackets(ctx);
 
   // ── CRT SCANLINES ────────────────────────────────────────
   drawScanlines();
