@@ -404,6 +404,17 @@ function getBurrowPositions() {
     // Прочее
     cheese: { x: bx + 200 * sx, y: 560 * sy },
     cans: { x: bx + 150 * sx, y: 590 * sy },
+    // === НОВЫЕ ДЕКОРАЦИИ ===
+    arcade: { x: bx + 200 * sx, y: 310 * sy, w: 55 * sx, h: 85 * sy },
+    dartBoard: { x: bx + 440 * sx, y: 60 * sy },
+    vendingMachine: { x: bx + 440 * sx, y: 230 * sy, w: 50 * sx, h: 85 * sy },
+    toilet: { x: bx + 440 * sx, y: 380 * sy, w: 55 * sx, h: 80 * sy },
+    waterCooler: { x: bx + 350 * sx, y: 180 * sy },
+    punchingBag: { x: bx + 350 * sx, y: 340 * sy },
+    hammock: { x: bx + 170 * sx, y: 430 * sy, w: 100 * sx },
+    graffitiWall: { x: bx + 30 * sx, y: 310 * sy, w: 90 * sx, h: 70 * sy },
+    neonSign: { x: bx + 180 * sx, y: 30 * sy, w: 160 * sx },
+    cheeseThrone: { x: bx + 320 * sx, y: 470 * sy },
   };
 }
 
@@ -2245,6 +2256,517 @@ function drawSlotMachine(ctx, x, y, w, h, t) {
   ctx.restore();
 }
 
+// ============================================================
+// 10 NEW BURROW DECORATIONS
+// ============================================================
+
+function drawArcade(ctx, x, y, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  // Cabinet body
+  ctx.fillStyle = '#1a2a66';
+  ctx.fillRect(-22, -70, 44, 85);
+  ctx.strokeStyle = '#3344aa'; ctx.lineWidth = 1.5;
+  ctx.strokeRect(-22, -70, 44, 85);
+  // Screen
+  ctx.fillStyle = '#000';
+  ctx.fillRect(-17, -65, 34, 30);
+  ctx.strokeStyle = '#00ff88'; ctx.lineWidth = 0.5;
+  ctx.strokeRect(-17, -65, 34, 30);
+  // Game on screen: rats shooting at cats
+  for (let i = 0; i < 4; i++) {
+    // Cats (top row)
+    ctx.fillStyle = '#ff6644';
+    const cx = -12 + i * 9;
+    const cy = -58 + Math.sin(t * 2 + i) * 2;
+    ctx.fillRect(cx, cy, 6, 5);
+    // Cat ears
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + 1, cy - 3); ctx.lineTo(cx + 3, cy); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx + 3, cy); ctx.lineTo(cx + 5, cy - 3); ctx.lineTo(cx + 6, cy); ctx.fill();
+  }
+  for (let i = 0; i < 3; i++) {
+    // Rat shooters (bottom row)
+    ctx.fillStyle = '#aaaaaa';
+    ctx.fillRect(-9 + i * 10, -42, 5, 4);
+    // Bullets
+    const bY = -42 + ((t * 30 + i * 40) % 20) * (-1);
+    if (bY > -62) {
+      ctx.fillStyle = '#00ff00';
+      ctx.fillRect(-7 + i * 10, bY, 1, 3);
+    }
+  }
+  // Title "RAT INVADERS"
+  ctx.fillStyle = `rgba(255,255,0,${0.6 + Math.sin(t * 4) * 0.4})`;
+  ctx.font = 'bold 5px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  ctx.fillText('RAT INVADERS', 0, -68);
+  // Joystick
+  ctx.fillStyle = '#222';
+  ctx.fillRect(-4, -28, 8, 12);
+  ctx.fillStyle = '#ff2222';
+  ctx.beginPath(); ctx.arc(0, -25, 3, 0, Math.PI * 2); ctx.fill();
+  // Buttons
+  ctx.fillStyle = '#ff0000';
+  ctx.beginPath(); ctx.arc(10, -22, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#0088ff';
+  ctx.beginPath(); ctx.arc(17, -22, 3, 0, Math.PI * 2); ctx.fill();
+  // Coin slot
+  ctx.fillStyle = '#888';
+  ctx.fillRect(-3, -14, 6, 2);
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+function drawDartBoard(ctx, x, y, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  const R = 28;
+  // Rings
+  const colors = ['#cc0000', '#ffffff', '#cc0000', '#ffffff', '#000000'];
+  for (let i = 0; i < 5; i++) {
+    ctx.fillStyle = colors[i];
+    ctx.beginPath();
+    ctx.arc(0, 0, R - i * 5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // PM face in center
+  ctx.fillStyle = '#ffcc88';
+  ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill();
+  // Eyes
+  ctx.fillStyle = '#333';
+  ctx.beginPath(); ctx.arc(-3, -2, 1.2, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(3, -2, 1.2, 0, Math.PI * 2); ctx.fill();
+  // Frown
+  ctx.strokeStyle = '#333'; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.arc(0, 2, 3, 0.2, Math.PI - 0.2); ctx.stroke();
+  // Tie
+  ctx.fillStyle = '#3344aa';
+  ctx.beginPath(); ctx.moveTo(0, 5); ctx.lineTo(-2, 12); ctx.lineTo(2, 12); ctx.closePath(); ctx.fill();
+  // Darts sticking in
+  const darts = [
+    { angle: -0.4, dist: 6, rot: 0.3 },  // forehead
+    { angle: 1.2, dist: 16, rot: -0.5 },
+    { angle: 2.8, dist: 22, rot: 0.7 },
+  ];
+  darts.forEach(d => {
+    ctx.save();
+    ctx.translate(Math.cos(d.angle) * d.dist, Math.sin(d.angle) * d.dist);
+    ctx.rotate(d.rot + Math.sin(t * 3 + d.angle) * 0.02);
+    ctx.strokeStyle = '#cc3300'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(10, -3); ctx.stroke();
+    // Flights
+    ctx.fillStyle = '#ff6600';
+    ctx.beginPath(); ctx.moveTo(8, -3); ctx.lineTo(12, -6); ctx.lineTo(12, 0); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  });
+  // Label
+  ctx.fillStyle = '#aaa';
+  ctx.font = '5px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  ctx.fillText('SPRINT PLANNING', 0, R + 8);
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+function drawEnergyVending(ctx, x, y, w, h, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  // Body
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0, 0, w, h);
+  // Neon border
+  ctx.strokeStyle = `rgba(0,255,100,${0.5 + Math.sin(t * 3) * 0.3})`;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(0, 0, w, h);
+  // Glass panel
+  ctx.fillStyle = '#ffffff10';
+  ctx.fillRect(3, 10, w - 6, h - 22);
+  // Rows of cans
+  const colors = ['#ff2222','#00cc44','#0088ff','#ffaa00','#ff44ff','#22dddd'];
+  for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < 3; col++) {
+      const cx = 7 + col * (w - 14) / 3;
+      const cy = 14 + row * 16;
+      ctx.fillStyle = colors[(row * 3 + col) % colors.length];
+      ctx.fillRect(cx, cy, 8, 12);
+      ctx.fillStyle = '#ffffff30';
+      ctx.fillRect(cx, cy, 8, 3);
+    }
+  }
+  // Stuck can (middle) — wobbles
+  const stuckX = w / 2 - 4;
+  const stuckY = 32 + Math.sin(t * 2) * 2;
+  ctx.save();
+  ctx.translate(stuckX + 4, stuckY + 6);
+  ctx.rotate(Math.sin(t * 3) * 0.15);
+  ctx.fillStyle = '#ff2222';
+  ctx.fillRect(-4, -6, 8, 12);
+  ctx.fillStyle = '#ffffff30';
+  ctx.fillRect(-4, -6, 8, 3);
+  ctx.restore();
+  // Title
+  ctx.fillStyle = '#ff2222';
+  ctx.font = 'bold 4px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  ctx.fillText('MONSTER RAT ⚡', w / 2, 8);
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+function drawToilet(ctx, x, y, w, h, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  // Door
+  ctx.fillStyle = '#5a4030';
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = '#3a2a18'; ctx.lineWidth = 1;
+  ctx.strokeRect(0, 0, w, h);
+  // Handle
+  ctx.fillStyle = '#ccaa44';
+  ctx.beginPath(); ctx.arc(w - 8, h / 2, 3, 0, Math.PI * 2); ctx.fill();
+  // Sign: "СЕРВЕРНАЯ" crossed out
+  ctx.fillStyle = '#ddd';
+  ctx.fillRect(w / 2 - 18, 8, 36, 18);
+  ctx.fillStyle = '#333';
+  ctx.font = '4px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  ctx.fillText('СЕРВЕРНАЯ', w / 2, 18);
+  // Strikethrough
+  ctx.strokeStyle = '#ff0000'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(w / 2 - 16, 16); ctx.lineTo(w / 2 + 16, 16); ctx.stroke();
+  // "ТУАЛЕТ" below
+  ctx.fillStyle = '#ff4444';
+  ctx.font = 'bold 5px "Share Tech Mono"';
+  ctx.fillText('ТУАЛЕТ', w / 2, 26);
+  // Red indicator "ЗАНЯТО" — blinks
+  const blinkOn = Math.sin(t * 4) > 0;
+  ctx.fillStyle = blinkOn ? '#ff0000' : '#440000';
+  ctx.beginPath(); ctx.arc(w / 2, 34, 4, 0, Math.PI * 2); ctx.fill();
+  if (blinkOn) {
+    ctx.fillStyle = '#ff0000';
+    ctx.font = '3px "Share Tech Mono"';
+    ctx.fillText('ЗАНЯТО', w / 2, 42);
+  }
+  // Smoke/steam from under door
+  for (let s = 0; s < 4; s++) {
+    const st = (t * 0.5 + s * 0.6) % 2.5;
+    const sx = w * 0.2 + s * w * 0.2;
+    ctx.globalAlpha = Math.max(0, 0.4 - st * 0.16);
+    ctx.fillStyle = '#aaaaaa';
+    ctx.beginPath();
+    ctx.arc(sx, h + 2 - st * 12, 3 + st * 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  // Stink stars
+  const stinkAlpha = 0.3 + Math.sin(t * 2) * 0.2;
+  ctx.globalAlpha = stinkAlpha;
+  ctx.fillStyle = '#aaff44';
+  ctx.font = '8px "Share Tech Mono"';
+  ctx.fillText('*  *  *', w / 2, -5);
+  ctx.globalAlpha = 1;
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+function drawWaterCooler(ctx, x, y, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  // Body
+  ctx.fillStyle = '#888';
+  ctx.fillRect(-8, -10, 16, 35);
+  ctx.strokeStyle = '#666'; ctx.lineWidth = 0.5;
+  ctx.strokeRect(-8, -10, 16, 35);
+  // Water tank on top
+  ctx.fillStyle = '#88ccee';
+  ctx.beginPath();
+  ctx.ellipse(0, -16, 7, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#55aacc'; ctx.stroke();
+  // Bubbles in tank
+  for (let b = 0; b < 3; b++) {
+    const bt = (t * 0.8 + b * 0.9) % 2;
+    const bx = -3 + b * 3;
+    const by = -12 - bt * 8;
+    if (by > -24) {
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = '#bbddff';
+      ctx.beginPath(); ctx.arc(bx, by, 1.5, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+  // Tap
+  ctx.fillStyle = '#aaa';
+  ctx.fillRect(5, -4, 5, 3);
+  // Cups
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(14, 8, 5, 7);
+  ctx.fillRect(20, 10, 4, 5);
+  // Label
+  ctx.fillStyle = '#ffaa00';
+  ctx.font = '4px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  ctx.fillText('GOSSIP ZONE 🐀', 0, 30);
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+function drawPunchingBag(ctx, x, y, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  // Chain
+  ctx.strokeStyle = '#888'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, -50); ctx.lineTo(0, -25); ctx.stroke();
+  // Chain links
+  for (let i = 0; i < 4; i++) {
+    ctx.strokeStyle = '#999';
+    ctx.beginPath();
+    ctx.ellipse(0, -48 + i * 7, 2, 3, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  // Bag — swings
+  const swing = Math.sin(t * 2) * 0.15;
+  ctx.save();
+  ctx.rotate(swing);
+  ctx.fillStyle = '#882222';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 14, 22, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#661111'; ctx.lineWidth = 1; ctx.stroke();
+  // Stitching
+  ctx.strokeStyle = '#aa4444'; ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(0, -22); ctx.lineTo(0, 22); ctx.stroke();
+  // "DEADLINE" text
+  ctx.fillStyle = '#ffcc00';
+  ctx.font = 'bold 4px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  ctx.fillText('DEAD', 0, -3);
+  ctx.fillText('LINE', 0, 4);
+  ctx.restore();
+  // Dust particles when swinging
+  if (Math.abs(Math.sin(t * 2)) > 0.7) {
+    const side = Math.sin(t * 2) > 0 ? 1 : -1;
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = '#ccaa88';
+    for (let p = 0; p < 2; p++) {
+      ctx.beginPath();
+      ctx.arc(side * 16 + rand(-3, 3), rand(-5, 5), 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+function drawHammock(ctx, x, y, w, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  const halfW = w / 2;
+  // Pipes
+  ctx.fillStyle = '#777';
+  ctx.fillRect(-halfW - 3, -40, 6, 65);
+  ctx.fillRect(halfW - 3, -40, 6, 65);
+  // Hammock (bezier curve)
+  const sag = 8 + Math.sin(t * 0.5) * 2;
+  ctx.strokeStyle = '#44aa44'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(-halfW, -8);
+  ctx.bezierCurveTo(-halfW * 0.3, sag + 10, halfW * 0.3, sag + 10, halfW, -8);
+  ctx.stroke();
+  // Hammock fill
+  ctx.fillStyle = '#44aa4430';
+  ctx.beginPath();
+  ctx.moveTo(-halfW, -8);
+  ctx.bezierCurveTo(-halfW * 0.3, sag + 10, halfW * 0.3, sag + 10, halfW, -8);
+  ctx.lineTo(halfW, -5);
+  ctx.bezierCurveTo(halfW * 0.3, sag + 13, -halfW * 0.3, sag + 13, -halfW, -5);
+  ctx.closePath();
+  ctx.fill();
+  // Netting lines
+  ctx.strokeStyle = '#44aa4450'; ctx.lineWidth = 0.5;
+  for (let i = -3; i <= 3; i++) {
+    ctx.beginPath();
+    ctx.moveTo(i * halfW / 4, -6 + Math.abs(i) * 1);
+    ctx.lineTo(i * halfW / 4, sag + 6 - Math.abs(i) * 1);
+    ctx.stroke();
+  }
+  // Sleeping rat (small)
+  ctx.fillStyle = '#c8a070';
+  ctx.beginPath(); ctx.ellipse(0, sag + 2, 8, 4, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#b09060';
+  ctx.beginPath(); ctx.arc(-7, sag, 3, 0, Math.PI * 2); ctx.fill();
+  // Ears
+  ctx.fillStyle = '#ddb090';
+  ctx.beginPath(); ctx.ellipse(-9, sag - 3, 2, 3, -0.3, 0, Math.PI * 2); ctx.fill();
+  // ZZZ
+  for (let z = 0; z < 3; z++) {
+    const zt = (t * 0.4 + z * 0.8) % 2.5;
+    ctx.globalAlpha = Math.max(0, 1 - zt / 2.5);
+    ctx.fillStyle = '#aabbff';
+    ctx.font = `${5 + z * 2}px "Share Tech Mono"`;
+    ctx.textAlign = 'center';
+    ctx.fillText('Z', 10 + z * 4, sag - 6 - zt * 8);
+  }
+  ctx.globalAlpha = 1;
+  // Sign
+  ctx.fillStyle = '#ffcc44';
+  ctx.font = '3.5px "Share Tech Mono"';
+  ctx.fillText('DO NOT DISTURB (LOL)', 0, 24);
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+function drawGraffitiWall(ctx, x, y, w, h, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  // Wall segment (darker patch)
+  ctx.fillStyle = '#2a2218';
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = '#3a3228'; ctx.lineWidth = 0.5;
+  ctx.strokeRect(0, 0, w, h);
+  // Graffiti texts
+  ctx.save();
+  ctx.translate(5, 12);
+  ctx.rotate(-0.08);
+  ctx.fillStyle = '#00ff44';
+  ctx.font = 'bold 7px "Share Tech Mono"';
+  ctx.fillText('AGILE IS A LIE', 0, 0);
+  ctx.restore();
+  
+  ctx.save();
+  ctx.translate(10, 30);
+  ctx.rotate(0.05);
+  ctx.fillStyle = '#ff3333';
+  ctx.font = '6px "Share Tech Mono"';
+  ctx.fillText('rm -rf /', 0, 0);
+  // Strikethrough
+  ctx.strokeStyle = '#ff3333'; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.moveTo(0, -2); ctx.lineTo(40, -2); ctx.stroke();
+  ctx.restore();
+  
+  ctx.save();
+  ctx.translate(15, 45);
+  ctx.rotate(-0.12);
+  ctx.fillStyle = '#ff88cc';
+  ctx.font = '8px "Share Tech Mono"';
+  ctx.fillText('ШНЫРЬ = ❤️', 0, 0);
+  ctx.restore();
+  
+  // Small rat drawing (primitive)
+  ctx.save();
+  ctx.translate(w - 25, 20);
+  ctx.strokeStyle = '#aaaaaa'; ctx.lineWidth = 1;
+  // Body
+  ctx.beginPath(); ctx.ellipse(0, 0, 6, 4, 0, 0, Math.PI * 2); ctx.stroke();
+  // Head
+  ctx.beginPath(); ctx.arc(7, -2, 3, 0, Math.PI * 2); ctx.stroke();
+  // Tail
+  ctx.beginPath(); ctx.moveTo(-6, 0); ctx.quadraticCurveTo(-12, -6, -14, 2); ctx.stroke();
+  // Ear
+  ctx.beginPath(); ctx.arc(8, -5, 2, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+  
+  ctx.save();
+  ctx.translate(w - 30, h - 8);
+  ctx.rotate(0.1);
+  ctx.fillStyle = '#888';
+  ctx.font = '4px "Share Tech Mono"';
+  ctx.fillText('v2.0 was here', 0, 0);
+  ctx.restore();
+  
+  ctx.restore();
+}
+
+function drawNeonSign(ctx, x, y, w, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  const text = 'HOME SWEET SEWER';
+  // Wires
+  ctx.strokeStyle = '#444'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w, 0); ctx.lineTo(w, -12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w * 0.3, 0); ctx.lineTo(w * 0.3, -8); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w * 0.7, 0); ctx.lineTo(w * 0.7, -8); ctx.stroke();
+  // Background bar
+  ctx.fillStyle = '#111';
+  ctx.fillRect(-3, 0, w + 6, 14);
+  // Neon text — letter by letter with one flickering
+  const flickerIdx = Math.floor((t * 0.3) % text.length);
+  ctx.font = 'bold 7px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  const letterW = w / text.length;
+  for (let i = 0; i < text.length; i++) {
+    let alpha = 1;
+    if (i === flickerIdx) {
+      alpha = 0.2 + Math.sin(t * 12) * 0.4;
+    }
+    ctx.globalAlpha = Math.max(0.1, alpha);
+    // Alternate green/pink
+    ctx.fillStyle = i % 2 === 0 ? '#00ff88' : '#ff44aa';
+    // Glow
+    ctx.shadowColor = i % 2 === 0 ? '#00ff88' : '#ff44aa';
+    ctx.shadowBlur = 6;
+    ctx.fillText(text[i], letterW * i + letterW / 2, 10);
+  }
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+function drawCheeseThrone(ctx, x, y, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  // Golden aura
+  const auraAlpha = 0.08 + Math.sin(t * 1.5) * 0.05;
+  ctx.fillStyle = `rgba(255,215,0,${auraAlpha})`;
+  ctx.beginPath(); ctx.arc(0, -10, 45, 0, Math.PI * 2); ctx.fill();
+  // Throne body (cheese block shaped as chair)
+  ctx.fillStyle = '#ddaa22';
+  // Seat
+  ctx.fillRect(-20, -5, 40, 20);
+  // Back
+  ctx.fillRect(-20, -40, 10, 40);
+  ctx.fillRect(10, -40, 10, 40);
+  ctx.fillRect(-20, -42, 40, 8);
+  // Armrests
+  ctx.fillRect(-22, -15, 6, 8);
+  ctx.fillRect(16, -15, 6, 8);
+  // Cheese holes
+  ctx.fillStyle = '#cc9900';
+  const holes = [[-8, 2, 3], [5, 5, 2.5], [-3, -20, 2], [6, -30, 3.5], [-12, -25, 2], [12, -15, 1.5], [-5, 10, 2], [0, -10, 2.5]];
+  holes.forEach(([hx, hy, hr]) => {
+    ctx.beginPath(); ctx.arc(hx, hy, hr, 0, Math.PI * 2); ctx.fill();
+  });
+  // Crown on backrest
+  ctx.fillStyle = '#ffd700';
+  ctx.beginPath();
+  ctx.moveTo(-10, -46);
+  ctx.lineTo(-12, -38);
+  ctx.lineTo(-6, -42);
+  ctx.lineTo(0, -36);
+  ctx.lineTo(6, -42);
+  ctx.lineTo(12, -38);
+  ctx.lineTo(10, -46);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = '#aa8800'; ctx.lineWidth = 0.5; ctx.stroke();
+  // Jewels on crown
+  ctx.fillStyle = '#ff2222';
+  ctx.beginPath(); ctx.arc(0, -42, 2, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#2255ff';
+  ctx.beginPath(); ctx.arc(-6, -44, 1.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(6, -44, 1.5, 0, Math.PI * 2); ctx.fill();
+  // Label
+  ctx.fillStyle = '#ffd700';
+  ctx.font = '4px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  ctx.fillText('FOR THE RAT KING', 0, 24);
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
 function drawBurrowDecorations() {
   drawBurrowFloor();
   // Apply brightness boost to all burrow decorations
@@ -2263,6 +2785,17 @@ function drawBurrowDecorations() {
   drawStripperPole(ctx, bp.stripperPole.x, bp.stripperPole.y, t);
   drawBeerMachine(ctx, bp.beerMachine.x, bp.beerMachine.y, bp.beerMachine.w, bp.beerMachine.h, t);
   drawSlotMachine(ctx, bp.slotMachine.x, bp.slotMachine.y, bp.slotMachine.w, bp.slotMachine.h, t);
+  // === 10 NEW DECORATIONS ===
+  drawArcade(ctx, bp.arcade.x, bp.arcade.y, t);
+  drawDartBoard(ctx, bp.dartBoard.x, bp.dartBoard.y, t);
+  drawEnergyVending(ctx, bp.vendingMachine.x, bp.vendingMachine.y, bp.vendingMachine.w, bp.vendingMachine.h, t);
+  drawToilet(ctx, bp.toilet.x, bp.toilet.y, bp.toilet.w, bp.toilet.h, t);
+  drawWaterCooler(ctx, bp.waterCooler.x, bp.waterCooler.y, t);
+  drawPunchingBag(ctx, bp.punchingBag.x, bp.punchingBag.y, t);
+  drawHammock(ctx, bp.hammock.x, bp.hammock.y, bp.hammock.w, t);
+  drawGraffitiWall(ctx, bp.graffitiWall.x, bp.graffitiWall.y, bp.graffitiWall.w, bp.graffitiWall.h, t);
+  drawNeonSign(ctx, bp.neonSign.x, bp.neonSign.y, bp.neonSign.w, t);
+  drawCheeseThrone(ctx, bp.cheeseThrone.x, bp.cheeseThrone.y, t);
   ctx.filter = 'none';
   ctx.restore();
   drawSpiderweb();
