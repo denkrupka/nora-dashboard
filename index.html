@@ -298,7 +298,7 @@ function getBurrowPositions() {
 // AMBIENT STATE
 // ============================================================
 const ambient = {
-  lampFlicker: 0, lampOn: true,
+  lampFlicker: 3, lampOn: true,
   dropTimer: 0, dropY: 0, dropFalling: false,
   spiderX: 0, spiderY: 0, spiderVX: 0.3,
   steamParticles: [],
@@ -2124,6 +2124,7 @@ function drawRatHead(id, def, agent) {
   ctx.lineWidth = 0.5;
   for (let w = 0; w < 3; w++) {
     const wy = -13 + w * 2;
+    // Right whiskers
     ctx.beginPath();
     ctx.moveTo(11, wy);
     ctx.lineTo(20, wy - 2 + w * 2 + Math.sin(t * 2 + w) * 0.5);
@@ -2131,6 +2132,15 @@ function drawRatHead(id, def, agent) {
     ctx.beginPath();
     ctx.moveTo(11, wy);
     ctx.lineTo(20, wy + 1 + Math.sin(t * 2 + w + 1) * 0.5);
+    ctx.stroke();
+    // Left whiskers
+    ctx.beginPath();
+    ctx.moveTo(-11, wy);
+    ctx.lineTo(-20, wy - 2 + w * 2 + Math.sin(t * 2 + w) * 0.5);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-11, wy);
+    ctx.lineTo(-20, wy + 1 + Math.sin(t * 2 + w + 1) * 0.5);
     ctx.stroke();
   }
 
@@ -2945,7 +2955,7 @@ function initDemoMode() {
     const pos = inBurrow ? getBurrowIdlePos(idx) : getOfficePos(agent.deskIdx);
     agent.x = pos.x; agent.y = pos.y;
     agent.targetX = pos.x; agent.targetY = pos.y;
-    agent.idleActivity = inBurrow ? randInt(0, 13) : -1;
+    agent.idleActivity = (inBurrow && agent.status !== 'sleeping') ? randInt(0, 13) : -1;
     if (agent.status === 'error') {
       agent.needsDoctor = true;
       agent.doctorTimer = rand(5, 10);
@@ -2973,7 +2983,7 @@ function updateDemoMode(dt) {
     if (inBurrow) {
       const pos = getBurrowIdlePos(idx);
       agent.targetX = pos.x; agent.targetY = pos.y;
-      agent.idleActivity = randInt(0, 13);
+      agent.idleActivity = (nextStatus !== 'sleeping') ? randInt(0, 13) : -1;
       agent.idleTimer = 0;
     } else {
       const pos = getOfficePos(agent.deskIdx);
@@ -3989,8 +3999,8 @@ let supabaseClient   = null;
 let supabasePollId   = null;
 
 function applyAgentRow(row) {
-  if (!row || !row.agent_id) return;
-  const ag = agents.find(a => a.def.id === row.agent_id);
+  if (!row || !row.id) return;
+  const ag = agents.find(a => a.def.id === row.id);
   if (!ag) return;
   if (row.status)       ag.status       = row.status;
   if (row.task)         ag.task         = row.task;
@@ -4164,6 +4174,51 @@ function render(timestamp) {
       ctx.globalAlpha = 1;
       ctx.restore();
 
+    } else if (agent.status === 'sleeping') {
+      // ── SLEEPING — лежит на кровати, ZZZ летят ──
+      ctx.save();
+      ctx.translate(agent.x, agent.y + 8);
+      ctx.rotate(Math.PI / 2); // лежит на боку
+      drawRat(agent, 0, 0, 1, 0.9);
+      ctx.restore();
+      // Одеяло
+      ctx.save();
+      ctx.translate(agent.x, agent.y + 12);
+      ctx.fillStyle = '#3355aa';
+      ctx.globalAlpha = 0.7;
+      ctx.beginPath(); ctx.roundRect(-16, -6, 32, 12, 5); ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.restore();
+      // ZZZ летят вверх
+      const sleepT = performance.now() / 1000;
+      ['Z', 'Z', 'Z'].forEach((z, zi) => {
+        const zt = ((sleepT * 0.6 + zi * 0.9) % 2.5);
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, 1 - zt / 2.5);
+        ctx.fillStyle = '#88ccff';
+        ctx.font = `bold ${8 + zi * 3}px "Share Tech Mono"`;
+        ctx.textAlign = 'center';
+        ctx.fillText(z, agent.x + 18 + zi * 6, agent.y - 10 - zt * 20);
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      });
+
+    } else if (agent.status === 'error') {
+      // ── ERROR — лежит на полу, X_X глаза, красные ошибки ──
+      ctx.save();
+      ctx.translate(agent.x, agent.y + 6);
+      ctx.rotate(Math.PI / 2); // лежит
+      // Рисуем крысу с X_X глазами
+      drawRat(agent, 0, 0, 1, 0.9);
+      // Перекрываем глаза крестиками
+      ctx.strokeStyle = '#ff2244';
+      ctx.lineWidth = 2;
+      [[-2, -15], [2, -15]].forEach(([ex, ey]) => {
+        ctx.beginPath(); ctx.moveTo(ex - 3, ey - 3); ctx.lineTo(ex + 3, ey + 3); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ex + 3, ey - 3); ctx.lineTo(ex - 3, ey + 3); ctx.stroke();
+      });
+      ctx.restore();
+
     } else if (inBurrow && agent.idleActivity >= 0) {
       // drawIdleActivity handles its own ctx.translate(agent.x, agent.y)
       drawIdleActivity(agent);
@@ -4197,13 +4252,29 @@ function render(timestamp) {
     ctx.textBaseline = 'alphabetic';
     ctx.restore();
 
-    // ── ERROR PARTICLES ──
+    // ── ERROR PARTICLES + MONITOR BLINK ──
     if (agent.status === 'error') {
       agent.errorParticleTimer -= deltaTime;
       if (agent.errorParticleTimer <= 0) {
-        agent.errorParticleTimer = 0.18;
+        agent.errorParticleTimer = 0.4;
+        const errMsgs = ['ERROR 500', 'NULL POINTER', 'SEGFAULT'];
+        const msg = errMsgs[Math.floor(Math.random() * errMsgs.length)];
         spawnParticle(agent.x + rand(-12, 12), agent.y - 20,
-          rand(-22, 22), rand(-45, -10), 1.6, '#ff2244', 2, 8, '!');
+          rand(-22, 22), rand(-60, -20), 2.0, '#ff2244', 2, 10, msg);
+      }
+      // Монитор мигает красным (если агент в офисе, т.е. есть стол)
+      if (!['idle','done','sleeping','reserve'].includes(agent.status)) {
+        const monFlash = (Math.sin(performance.now() / 120) > 0);
+        if (monFlash) {
+          ctx.save();
+          ctx.translate(agent.x + 22, agent.y - 28);
+          ctx.fillStyle = 'rgba(255,34,68,0.55)';
+          ctx.shadowColor = '#ff2244';
+          ctx.shadowBlur = 12;
+          ctx.beginPath(); ctx.roundRect(-11, -8, 22, 16, 3); ctx.fill();
+          ctx.shadowBlur = 0;
+          ctx.restore();
+        }
       }
     }
   });
@@ -4232,6 +4303,14 @@ function render(timestamp) {
         tgt.needsDoctor = false;
         addFloatingText(tgt.x, tgt.y - 36, '+HP 💉', '#00ff88', 15);
         spawnParticle(tgt.x, tgt.y - 20, rand(-30, 30), rand(-60, -20), 2, '#00ff88', 3, 10, '+');
+        // Переместить в нору и назначить idleActivity
+        if (tgt.status === 'idle') {
+          const healIdx = doctor.targetAgentIdx;
+          const pos = getBurrowIdlePos(healIdx);
+          tgt.targetX = pos.x; tgt.targetY = pos.y;
+          tgt.idleActivity = randInt(0, 13);
+          tgt.idleTimer = 0; tgt.idleAnimT = 0;
+        }
         doctor.phase = 'running-out';
       }
     } else if (doctor.phase === 'running-out') {
@@ -4252,9 +4331,21 @@ function render(timestamp) {
     const ambState = { ambulance: { startTime: ambulance.startTime } };
     drawAmbulance(ctx, ambState, ambulance.t, W, H);
     if (!ambState.ambulance) {
-      // Ambulance drove away — mark agent as gone
+      // Ambulance drove away — resurrect agent
       ambulance.active = false;
       ambulance.phase  = 'idle';
+      const revived = ambulance.targetAgentIdx >= 0 ? agents[ambulance.targetAgentIdx] : null;
+      if (revived) {
+        revived.status = 'idle';
+        revived.needsDoctor = false;
+        const pos = getBurrowIdlePos(ambulance.targetAgentIdx);
+        revived.x = pos.x; revived.y = pos.y;
+        revived.targetX = pos.x; revived.targetY = pos.y;
+        revived.idleActivity = 0; // recovery на диване (case 0 = пьёт пиво, но норм)
+        revived.idleTimer = 0; revived.idleAnimT = 0;
+        addFloatingText(revived.x, revived.y - 40, '🏥 ВЫЖИЛ!', '#00ff88', 14);
+      }
+      ambulance.targetAgentIdx = -1;
     }
   }
 
