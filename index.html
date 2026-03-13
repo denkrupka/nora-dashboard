@@ -105,10 +105,19 @@ function drawRoundRect(x, y, w, h, r) {
   ctx.closePath();
 }
 
+// Glow gradient cache to avoid recreating identical gradients every frame
+const _glowCache = new Map();
 function drawGlow(x, y, radius, color, alpha) {
+  const key = `${radius}|${color}|${alpha}`;
+  let stops = _glowCache.get(key);
+  if (!stops) {
+    stops = { c0: color + hex(alpha), c1: color + '00' };
+    _glowCache.set(key, stops);
+    if (_glowCache.size > 200) _glowCache.clear(); // prevent unbounded growth
+  }
   const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
-  g.addColorStop(0, color + hex(alpha));
-  g.addColorStop(1, color + '00');
+  g.addColorStop(0, stops.c0);
+  g.addColorStop(1, stops.c1);
   ctx.fillStyle = g;
   ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
 }
@@ -347,12 +356,16 @@ const AGENT_DEFS = [
 // DESK POSITIONS (Office)
 // ============================================================
 const DESKS = [
-  { x: 60, y: 200, w: 110, h: 55, monX: 80, monY: 170 },
-  { x: 200, y: 160, w: 110, h: 55, monX: 220, monY: 130 },
-  { x: 340, y: 220, w: 110, h: 55, monX: 360, monY: 190 },
-  { x: 100, y: 360, w: 110, h: 55, monX: 120, monY: 330 },
-  { x: 270, y: 400, w: 110, h: 55, monX: 290, monY: 370 },
-  { x: 420, y: 320, w: 110, h: 55, monX: 440, monY: 290 },
+  // Row 1 (upper) — 4 desks
+  { x: 40,  y: 170, w: 100, h: 50, monX: 55,  monY: 140 },
+  { x: 170, y: 170, w: 100, h: 50, monX: 185, monY: 140 },
+  { x: 300, y: 170, w: 100, h: 50, monX: 315, monY: 140 },
+  { x: 430, y: 170, w: 100, h: 50, monX: 445, monY: 140 },
+  // Row 2 (lower) — 4 desks
+  { x: 40,  y: 360, w: 100, h: 50, monX: 55,  monY: 330 },
+  { x: 170, y: 360, w: 100, h: 50, monX: 185, monY: 330 },
+  { x: 300, y: 360, w: 100, h: 50, monX: 315, monY: 330 },
+  { x: 430, y: 360, w: 100, h: 50, monX: 445, monY: 330 },
 ];
 
 // Scale desk positions relative to actual screen
@@ -375,14 +388,22 @@ function getBurrowPositions() {
   const sx = bw / 500;
   const sy = H / 700;
   return {
-    couch: { x: bx + 40 * sx, y: 300 * sy, w: 180 * sx, h: 70 * sy },
-    tv: { x: bx + 280 * sx, y: 180 * sy, w: 120 * sx, h: 90 * sy },
-    bed: { x: bx + 300 * sx, y: 450 * sy, w: 140 * sx, h: 80 * sy },
-    pizza: { x: bx + 50 * sx, y: 480 * sy },
+    // Верх: ТВ на стене + диван перед ним
+    tv: { x: bx + 120 * sx, y: 80 * sy, w: 140 * sx, h: 90 * sy },
+    couch: { x: bx + 90 * sx, y: 190 * sy, w: 200 * sx, h: 70 * sy },
+    console: { x: bx + 200 * sx, y: 175 * sy },
+    // Центр: шест + автомат с пивом
+    stripperPole: { x: bx + 100 * sx, y: 340 * sy },
+    beerMachine: { x: bx + 280 * sx, y: 310 * sy, w: 60 * sx, h: 90 * sy },
+    // Низ: слот-машина + кровать
+    slotMachine: { x: bx + 60 * sx, y: 470 * sy, w: 70 * sx, h: 80 * sy },
+    bed: { x: bx + 250 * sx, y: 460 * sy, w: 140 * sx, h: 80 * sy },
+    // Угол: пицца-башня + холодильник
+    pizza: { x: bx + 380 * sx, y: 470 * sy },
     fridge: { x: bx + 400 * sx, y: 100 * sy, w: 60 * sx, h: 100 * sy },
-    cheese: { x: bx + 200 * sx, y: 520 * sy },
-    cans: { x: bx + 150 * sx, y: 560 * sy },
-    console: { x: bx + 310 * sx, y: 280 * sy },
+    // Прочее
+    cheese: { x: bx + 200 * sx, y: 560 * sy },
+    cans: { x: bx + 150 * sx, y: 590 * sy },
   };
 }
 
@@ -402,17 +423,21 @@ const ambient = {
 // ============================================================
 // SCANLINES CRT OVERLAY
 // ============================================================
+let _vignetteCache = { W: 0, H: 0, grad: null };
 function drawScanlines() {
   ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
   for (let y = 0; y < H; y += 3) {
-    ctx.fillStyle = 'rgba(0,0,0,0.08)';
     ctx.fillRect(0, y, W, 1);
   }
-  // Vignette
-  const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.9);
-  vg.addColorStop(0, 'rgba(0,0,0,0)');
-  vg.addColorStop(1, 'rgba(0,0,0,0.4)');
-  ctx.fillStyle = vg;
+  // Vignette (cached)
+  if (_vignetteCache.W !== W || _vignetteCache.H !== H) {
+    const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.9);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.4)');
+    _vignetteCache = { W, H, grad: vg };
+  }
+  ctx.fillStyle = _vignetteCache.grad;
   ctx.fillRect(0, 0, W, H);
   ctx.restore();
 }
@@ -420,45 +445,39 @@ function drawScanlines() {
 // ============================================================
 // BACKGROUND GRADIENTS
 // ============================================================
+// Cached background gradients (recreated on resize)
+let _bgCache = { W: 0, H: 0, SX: 0 };
+function _rebuildBgCache() {
+  _bgCache.W = W; _bgCache.H = H; _bgCache.SX = SPLIT_X;
+  const c = _bgCache;
+  c.offGrad = ctx.createLinearGradient(0, 0, 0, H);
+  c.offGrad.addColorStop(0, '#060d1a'); c.offGrad.addColorStop(1, '#030810');
+  c.burGrad = ctx.createLinearGradient(SPLIT_X, 0, SPLIT_X, H);
+  c.burGrad.addColorStop(0, '#2a1818'); c.burGrad.addColorStop(1, '#1a1010');
+  c.offAtmos = ctx.createLinearGradient(0, 0, 0, H * 0.55);
+  c.offAtmos.addColorStop(0, 'rgba(0,68,255,0.09)');
+  c.offAtmos.addColorStop(0.5, 'rgba(0,44,180,0.04)');
+  c.offAtmos.addColorStop(1, 'rgba(0,0,0,0)');
+  c.burAtmos = ctx.createLinearGradient(SPLIT_X, 0, SPLIT_X, H * 0.55);
+  c.burAtmos.addColorStop(0, 'rgba(255,120,20,0.14)');
+  c.burAtmos.addColorStop(0.5, 'rgba(220,80,10,0.07)');
+  c.burAtmos.addColorStop(1, 'rgba(0,0,0,0)');
+  c.burWarm = ctx.createLinearGradient(SPLIT_X, 0, SPLIT_X, H);
+  c.burWarm.addColorStop(0, 'rgba(255,130,50,0.10)');
+  c.burWarm.addColorStop(0.5, 'rgba(255,110,30,0.05)');
+  c.burWarm.addColorStop(1, 'rgba(0,0,0,0)');
+}
 function drawBackground() {
-  // Office side
-  const offGrad = ctx.createLinearGradient(0, 0, 0, H);
-  offGrad.addColorStop(0, '#060d1a');
-  offGrad.addColorStop(1, '#030810');
-  ctx.fillStyle = offGrad;
+  if (_bgCache.W !== W || _bgCache.H !== H || _bgCache.SX !== SPLIT_X) _rebuildBgCache();
+  ctx.fillStyle = _bgCache.offGrad;
   ctx.fillRect(0, 0, SPLIT_X, H);
-
-  // Burrow side
-  const burGrad = ctx.createLinearGradient(SPLIT_X, 0, SPLIT_X, H);
-  burGrad.addColorStop(0, '#2a1818');
-  burGrad.addColorStop(1, '#1a1010');
-  ctx.fillStyle = burGrad;
+  ctx.fillStyle = _bgCache.burGrad;
   ctx.fillRect(SPLIT_X, 0, W - SPLIT_X, H);
-
-  // ── ATMOSPHERIC LIGHTING ─────────────────────────────────
-
-  // Office: cool blue glow from ceiling
-  const offAtmos = ctx.createLinearGradient(0, 0, 0, H * 0.55);
-  offAtmos.addColorStop(0, 'rgba(0,68,255,0.09)');
-  offAtmos.addColorStop(0.5, 'rgba(0,44,180,0.04)');
-  offAtmos.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = offAtmos;
+  ctx.fillStyle = _bgCache.offAtmos;
   ctx.fillRect(0, 0, SPLIT_X, H * 0.55);
-
-  // Burrow: warm orange glow from above (rusty lantern vibe)
-  const burAtmos = ctx.createLinearGradient(SPLIT_X, 0, SPLIT_X, H * 0.55);
-  burAtmos.addColorStop(0, 'rgba(255,120,20,0.14)');
-  burAtmos.addColorStop(0.5, 'rgba(220,80,10,0.07)');
-  burAtmos.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = burAtmos;
+  ctx.fillStyle = _bgCache.burAtmos;
   ctx.fillRect(SPLIT_X, 0, W - SPLIT_X, H * 0.55);
-
-  // Burrow: extra warm ambient overlay for brightness
-  const burWarm = ctx.createLinearGradient(SPLIT_X, 0, SPLIT_X, H);
-  burWarm.addColorStop(0, 'rgba(255,130,50,0.10)');
-  burWarm.addColorStop(0.5, 'rgba(255,110,30,0.05)');
-  burWarm.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = burWarm;
+  ctx.fillStyle = _bgCache.burWarm;
   ctx.fillRect(SPLIT_X, 0, W - SPLIT_X, H);
 }
 
@@ -1238,12 +1257,12 @@ function drawTV() {
   ctx.clip();
 
   if (tvMode === 0) {
-    // Static noise
-    for (let ny = 0; ny < sh; ny += 3) {
-      for (let nx = 0; nx < sw; nx += 3) {
-        const v = Math.random() * 80;
+    // Static noise (coarser grid for perf)
+    for (let ny = 0; ny < sh; ny += 5) {
+      for (let nx = 0; nx < sw; nx += 5) {
+        const v = Math.random() * 80 | 0;
         ctx.fillStyle = `rgb(${v},${v},${v})`;
-        ctx.fillRect(sx + nx, sy + ny, 3, 3);
+        ctx.fillRect(sx + nx, sy + ny, 5, 5);
       }
     }
   } else if (tvMode === 1) {
@@ -1909,6 +1928,323 @@ function drawOfficeDecorations() {
   drawCoffeeMachine();
 }
 
+// ============================================================
+// STRIPPER POLE 🐭💃
+// ============================================================
+function drawStripperPole(ctx, x, y, t) {
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Chrome pole — vertical
+  const poleH = 120;
+  const poleGrad = ctx.createLinearGradient(-3, -poleH, 3, 0);
+  poleGrad.addColorStop(0, '#e0e0e0');
+  poleGrad.addColorStop(0.3, '#ffffff');
+  poleGrad.addColorStop(0.5, '#b0b0b0');
+  poleGrad.addColorStop(0.7, '#ffffff');
+  poleGrad.addColorStop(1, '#c0c0c0');
+  ctx.fillStyle = poleGrad;
+  ctx.fillRect(-3, -poleH, 6, poleH);
+
+  // Pole base
+  ctx.fillStyle = '#888';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 12, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Pole top cap
+  ctx.fillStyle = '#ccc';
+  ctx.beginPath();
+  ctx.ellipse(0, -poleH, 5, 2, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Stage/platform circle
+  ctx.strokeStyle = '#ff69b480';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.ellipse(0, 2, 25, 8, 0, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // === Мышка-стриптизёрша (маленькая!) ===
+  const mouseAngle = t * 2.5;
+  const mouseR = 14;
+  const mx = Math.cos(mouseAngle) * mouseR;
+  const my = Math.sin(mouseAngle) * mouseR * 0.4; // squash for perspective
+  const mz = -poleH * 0.45 + Math.sin(t * 1.2) * 15; // vertical bob
+
+  ctx.save();
+  ctx.translate(mx, mz + my);
+
+  // Тело мышки (маленькое!)
+  ctx.fillStyle = '#d0b090';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 5, 7, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Голова
+  ctx.fillStyle = '#d8b898';
+  ctx.beginPath();
+  ctx.arc(0, -8, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Уши (большие, мышиные)
+  ctx.fillStyle = '#e8c8a8';
+  ctx.beginPath(); ctx.arc(-4, -11, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -11, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#ffaaaa';
+  ctx.beginPath(); ctx.arc(-4, -11, 1.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -11, 1.5, 0, Math.PI * 2); ctx.fill();
+
+  // Глазки
+  ctx.fillStyle = '#111';
+  ctx.beginPath(); ctx.arc(-1.5, -8, 0.8, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(2, -8, 0.8, 0, Math.PI * 2); ctx.fill();
+
+  // Розовый бантик 🎀
+  ctx.fillStyle = '#ff69b4';
+  ctx.beginPath();
+  ctx.moveTo(0, -13); ctx.lineTo(-4, -15); ctx.lineTo(0, -14); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(0, -13); ctx.lineTo(4, -15); ctx.lineTo(0, -14); ctx.fill();
+  ctx.beginPath(); ctx.arc(0, -13, 1, 0, Math.PI * 2); ctx.fill();
+
+  // Ножки вытянуты
+  const legKick = Math.sin(mouseAngle * 2) * 0.3;
+  ctx.strokeStyle = '#d0b090';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(-2, 6); ctx.lineTo(-5, 12 + Math.sin(legKick) * 3); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(2, 6); ctx.lineTo(5, 12 - Math.sin(legKick) * 3); ctx.stroke();
+
+  // Лапки на шесте (линия к центру)
+  ctx.strokeStyle = '#c8a878';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(-3, -2); ctx.lineTo(-mx * 0.3, -my * 0.3 - mz * 0.05); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(3, -2); ctx.lineTo(-mx * 0.2, -my * 0.2 - mz * 0.05); ctx.stroke();
+
+  // Длинный хвост
+  ctx.strokeStyle = '#c89878';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, 7);
+  ctx.quadraticCurveTo(8 + Math.sin(t * 3) * 5, 14, 12 + Math.cos(t * 2) * 4, 18);
+  ctx.stroke();
+
+  ctx.restore();
+
+  // === Неоновая вывеска "MOUSETRAP" ===
+  const neonFlicker = 0.7 + Math.sin(t * 8) * 0.15 + Math.sin(t * 13) * 0.1;
+  ctx.globalAlpha = neonFlicker;
+  ctx.fillStyle = '#ff69b4';
+  ctx.font = 'bold 10px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  // Glow
+  ctx.shadowColor = '#ff69b4';
+  ctx.shadowBlur = 12;
+  ctx.fillText('MOUSETRAP', 0, -poleH - 12);
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+  ctx.textAlign = 'left';
+
+  // === Монетки от зрителей (падающие) ===
+  for (let c = 0; c < 3; c++) {
+    const ct = (t * 0.8 + c * 1.3) % 3;
+    if (ct < 2) {
+      ctx.globalAlpha = Math.max(0, 1 - ct / 2);
+      ctx.fillStyle = '#ffdd44';
+      ctx.beginPath();
+      ctx.arc(-18 + c * 18, -20 + ct * 25, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  ctx.restore();
+}
+
+// ============================================================
+// BEER MACHINE 🍺
+// ============================================================
+function drawBeerMachine(ctx, x, y, w, h, t) {
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Корпус автомата
+  ctx.fillStyle = '#2a2a2a';
+  drawRoundRect(0, 0, w, h, 4);
+  ctx.fill();
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 1.5;
+  drawRoundRect(0, 0, w, h, 4);
+  ctx.stroke();
+
+  // Верхняя панель
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(3, 3, w - 6, 18);
+
+  // Неоновая надпись "RAT BREW"
+  const brewFlicker = 0.75 + Math.sin(t * 6) * 0.15 + Math.sin(t * 11) * 0.1;
+  ctx.globalAlpha = brewFlicker;
+  ctx.fillStyle = '#00ff66';
+  ctx.shadowColor = '#00ff66';
+  ctx.shadowBlur = 8;
+  ctx.font = 'bold 9px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  ctx.fillText('RAT BREW', w / 2, 16);
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+
+  // LED экран с бегущей ценой
+  ctx.fillStyle = '#001100';
+  ctx.fillRect(8, 24, w - 16, 14);
+  ctx.fillStyle = '#00ff44';
+  ctx.font = '8px "Share Tech Mono"';
+  const priceScroll = (t * 30) % (w * 3);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(8, 24, w - 16, 14);
+  ctx.clip();
+  ctx.fillText('0.5 🧀  COLD BEER  0.5 🧀  ХОЛОДНОЕ  ', w - 8 - priceScroll % (w * 2), 35);
+  ctx.restore();
+
+  // Кнопка мигающая красным
+  const btnGlow = Math.sin(t * 4) > 0 ? '#ff3333' : '#aa1111';
+  ctx.fillStyle = btnGlow;
+  ctx.beginPath();
+  ctx.arc(w / 2, 50, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = '5px "Share Tech Mono"';
+  ctx.fillText('BUY', w / 2, 52);
+
+  // Пивные банки внутри (видны через стекло)
+  ctx.fillStyle = '#00000040';
+  ctx.fillRect(6, 58, w - 12, h - 68);
+  for (let row = 0; row < 2; row++) {
+    for (let col = 0; col < 3; col++) {
+      ctx.fillStyle = ['#1a5010', '#cc4400', '#1a3060'][col % 3];
+      ctx.fillRect(10 + col * 14, 60 + row * 12, 10, 10);
+      ctx.fillStyle = '#ffffff30';
+      ctx.fillRect(10 + col * 14, 60 + row * 12, 10, 3);
+    }
+  }
+
+  // Банка выходит внизу
+  const canPop = Math.sin(t * 0.5);
+  if (canPop > 0.3) {
+    ctx.fillStyle = '#1a5010';
+    ctx.fillRect(w / 2 - 5, h - 8, 10, 8 * Math.min(1, (canPop - 0.3) * 3));
+    ctx.fillStyle = '#ffcc00';
+    ctx.fillRect(w / 2 - 5, h - 5, 10, 3);
+  }
+
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+// ============================================================
+// SLOT MACHINE 🎰
+// ============================================================
+let _slotJackpotTimer = 0;
+let _slotJackpot = false;
+
+function drawSlotMachine(ctx, x, y, w, h, t) {
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Корпус — тёмно-красный/gold
+  const bodyGrad = ctx.createLinearGradient(0, 0, w, h);
+  bodyGrad.addColorStop(0, '#4a0a0a');
+  bodyGrad.addColorStop(0.5, '#6a1a1a');
+  bodyGrad.addColorStop(1, '#3a0808');
+  ctx.fillStyle = bodyGrad;
+  drawRoundRect(0, 0, w, h, 5);
+  ctx.fill();
+  // Gold trim
+  ctx.strokeStyle = '#daa520';
+  ctx.lineWidth = 2;
+  drawRoundRect(0, 0, w, h, 5);
+  ctx.stroke();
+
+  // Надпись "RAT VEGAS" неоном сверху
+  const vegasFlicker = 0.8 + Math.sin(t * 7) * 0.12 + Math.cos(t * 11) * 0.08;
+  ctx.globalAlpha = vegasFlicker;
+  ctx.fillStyle = '#ffcc00';
+  ctx.shadowColor = '#ffcc00';
+  ctx.shadowBlur = 10;
+  ctx.font = 'bold 8px "Share Tech Mono"';
+  ctx.textAlign = 'center';
+  ctx.fillText('RAT VEGAS', w / 2, -5);
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+
+  // 3 слота
+  const symbols = ['🧀', '🐀', '💀', '🍺', '💰'];
+  const slotW = (w - 20) / 3;
+  ctx.fillStyle = '#111';
+  ctx.fillRect(7, 12, w - 14, 24);
+
+  const slotVals = [];
+  for (let s = 0; s < 3; s++) {
+    const speed = 1.7 + s * 0.6;
+    const idx = Math.floor(((Math.sin(t * speed) + 1) / 2) * symbols.length) % symbols.length;
+    slotVals.push(idx);
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(9 + s * slotW + s * 2, 14, slotW, 20);
+    ctx.font = '14px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(symbols[idx], 9 + s * slotW + slotW / 2 + s * 2, 30);
+  }
+
+  // Jackpot check
+  const allSame = slotVals[0] === slotVals[1] && slotVals[1] === slotVals[2];
+  if (allSame && !_slotJackpot) {
+    _slotJackpot = true;
+    _slotJackpotTimer = t;
+  }
+  if (_slotJackpot && t - _slotJackpotTimer > 3) {
+    _slotJackpot = false;
+  }
+
+  if (_slotJackpot) {
+    // JACKPOT! text
+    const jpFlash = Math.sin(t * 12) > 0 ? '#ffdd00' : '#ff4400';
+    ctx.fillStyle = jpFlash;
+    ctx.shadowColor = '#ffdd00';
+    ctx.shadowBlur = 15;
+    ctx.font = 'bold 12px "Share Tech Mono"';
+    ctx.fillText('JACKPOT!', w / 2, 52);
+    ctx.shadowBlur = 0;
+    // Golden particles
+    for (let p = 0; p < 2; p++) {
+      spawnParticle(x + w / 2 + rand(-20, 20), y + 10, rand(-30, 30), rand(-50, -20), 1.2, '#ffdd00', 3, 15, '★');
+    }
+  }
+
+  // Рычаг сбоку
+  const leverPull = Math.sin(t * 0.4);
+  const leverAngle = leverPull > 0.7 ? (leverPull - 0.7) * 3 : 0;
+  ctx.save();
+  ctx.translate(w + 4, 20);
+  ctx.rotate(leverAngle * 0.5);
+  ctx.fillStyle = '#888';
+  ctx.fillRect(-2, 0, 4, 30);
+  // Knob
+  ctx.fillStyle = '#ff3333';
+  ctx.beginPath();
+  ctx.arc(0, 0, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // Coin slot
+  ctx.fillStyle = '#333';
+  ctx.fillRect(w / 2 - 6, h - 12, 12, 3);
+  ctx.fillStyle = '#555';
+  ctx.fillRect(w / 2 - 4, h - 11, 8, 1);
+
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
 function drawBurrowDecorations() {
   drawBurrowFloor();
   // Apply brightness boost to all burrow decorations
@@ -1921,6 +2257,12 @@ function drawBurrowDecorations() {
   drawBeerCans();
   drawFridge();
   drawCheeseOnFloor();
+  // New decorations
+  const bp = getBurrowPositions();
+  const t = performance.now() / 1000;
+  drawStripperPole(ctx, bp.stripperPole.x, bp.stripperPole.y, t);
+  drawBeerMachine(ctx, bp.beerMachine.x, bp.beerMachine.y, bp.beerMachine.w, bp.beerMachine.h, t);
+  drawSlotMachine(ctx, bp.slotMachine.x, bp.slotMachine.y, bp.slotMachine.w, bp.slotMachine.h, t);
   ctx.filter = 'none';
   ctx.restore();
   drawSpiderweb();
@@ -3025,12 +3367,12 @@ let agents = STAGE1_DEFS.map((def, idx) => ({
   // World position
   x: 0, y: 0,
   targetX: 0, targetY: 0,
-  deskIdx: idx % 6,
+  deskIdx: idx % 8,
   facing: 1,
   // Blink phase
   blinkOffset: Math.random() * Math.PI * 2,
   // Idle
-  idleActivity: randInt(0, 13),
+  idleActivity: randInt(0, 16),
   idleTimer: 0,
   idleAnimT: Math.random() * 10,
   // Particles
@@ -3081,26 +3423,26 @@ const providerTokens = {
 // TICKER STATE
 // ============================================================
 const TICKER_POOL = [
-  '[ШНЫРЬ] Задача #142 выполнена ✓',
-  '[КОДОГРЫЗ] git commit -m "fix: critical auth bug" ✓',
-  '[НОРНИК] 🚀 Деплой на прод завершён успешно',
-  '[НЮХАЧ] Найдена уязвимость CVE-2025-1337 ⚠️',
-  '[АРХИНОР] ADR-042 утверждён • Microservices migration',
-  '[ПИСКЕЛЬ] UI kit v3.1 готов ✨ PIXEL PERFECT',
-  '[ШУРШИК] 47 багов задокументировано 🐛🐛🐛',
-  '[ЗАМОКРЫС] Пентест завершён. Всё ок. Почти. OWASP ✓',
-  '[СЫРОЛОГ] CAC снизился на 12% • LTV вырос 📈',
-  '[АРХИВАРЬ] Документация обновлена до v2.1 📚',
-  '[ПЛАНОГРЫЗ] Sprint 42 завершён ✅ Velocity: 89 SP',
-  '[СИСТЕМА] Tokens anthropic: 67% от лимита',
-  '[СИСТЕМА] Supabase ping: 18ms • Uptime: 99.7%',
-  '[ШНЫРЬ] Срочное совещание через 5 минут!',
-  '[КОДОГРЫЗ] NULL POINTER на строке 42. В процессе...',
-  '[НОРНИК] Kubernetes pod restarted × 3. Не спрашивай.',
-  '[НЮХАЧ] npm audit: 3 critical • 12 high • 44 moderate',
-  '[АРХИВАРЬ] README обновлён • Добавлены диаграммы',
-  '[ПЛАНОГРЫЗ] Следующий дедлайн: ЗАВТРА ⏰',
-  '[ЗАМОКРЫС] Обнаружен открытый порт 22 • Закрываю',
+  '[ШНЫРЬ] Кодогрыз опять коммитит в 4 утра... кофе закончился, перешёл на RedBull внутривенно 💉',
+  '[ШУРШИК] Нашёл 47 багов. 46 из них — фичи. Один — Кодогрыз забыл штаны 🩲',
+  '[НЮХАЧ] Stack Overflow лежит. Кодогрыз в панике ест сыр прямо из серверной 🧀',
+  '[ПИСКЕЛЬ] Заказчик попросил "сделать логотип побольше". Пискель заплакал в шрифты 😭',
+  '[ЗАМОКРЫС] Пароль админа: admin123. Замокрыс повесился на файрволле 🔥',
+  '[НОРНИК] Деплой в пятницу вечером. Норник написал завещание 📜',
+  '[СЫРОЛОГ] Конкуренты выкатили AI. Сыролог предложил добавить блокчейн. В сыр. 🧀⛓',
+  '[АРХИНОР] Микросервисы? Монолит? Архинор предложил "макросервисы". Его побили 🤕',
+  '[КОДОГРЫЗ] git push --force в main. Шнырь бежит с топором. Кодогрыз бежит быстрее 🪓',
+  '[ШНЫРЬ] Стендап длился 2 часа. 1:55 — Кодогрыз объяснял почему "почти готово" 🕐',
+  '[АРХИВАРЬ] Документацию не читает никто. Архиварь плачет в JIRA 😢',
+  '[ПЛАНОГРЫЗ] Спринт на 2 недели. Задач на 2 месяца. Планогрыз считает это "амбициозно" 📊',
+  '[ШУРШИК] Тесты зелёные! ...потому что Кодогрыз закомментил assert 🤡',
+  '[НЮХАЧ] Гуглил "как мотивировать крыс". Попал на форум дрессировщиков. Внедрил 🐀',
+  '[ЗАМОКРЫС] Хакеры атаковали. Замокрыс атаковал в ответ. HR вызвал на разговор 🏢',
+  '[ПИСКЕЛЬ] UX тест: юзер нажал "Отмена" 47 раз. Это была кнопка "Подтвердить" 🎯',
+  '[НОРНИК] Прод упал. Норник поднял. Прод упал. Норник выпил. Прод поднялся сам 🍺',
+  '[СЫРОЛОГ] Написал оффер на 40 страниц. Клиент прочитал заголовок и ушёл 📄',
+  '[КОДОГРЫЗ] "Это не баг, это недокументированное поведение" — Кодогрыз, каждый день 🐛',
+  '[ШНЫРЬ] Крыса №7 спит уже 3 часа. Шнырь проверил пульс. Пульс есть. Зарплата — нет 💀',
 ];
 let tickerOffset = 0;
 let tickerText = TICKER_POOL.slice(0, 8).join('  ◆  ');
@@ -3155,6 +3497,12 @@ function getBurrowIdlePos(agentIdx) {
     { x: bp.cans.x + 20,                         y: bp.cans.y - 12 },
     // 10 — у холодильника сбоку
     { x: bp.fridge.x + bp.fridge.w + 20,         y: bp.fridge.y + bp.fridge.h * 0.5 },
+    // 11 — у шеста для стриптиза
+    { x: bp.stripperPole.x + 35,                 y: bp.stripperPole.y + 10 },
+    // 12 — у автомата с пивом
+    { x: bp.beerMachine.x - 30,                  y: bp.beerMachine.y + bp.beerMachine.h * 0.5 },
+    // 13 — у слот-машины
+    { x: bp.slotMachine.x + bp.slotMachine.w + 15, y: bp.slotMachine.y + 20 },
   ];
   return spots[agentIdx % spots.length];
 }
@@ -3193,7 +3541,7 @@ function initDemoMode() {
     const pos = inBurrow ? getBurrowIdlePos(idx) : getOfficePos(agent.deskIdx);
     agent.x = pos.x; agent.y = pos.y;
     agent.targetX = pos.x; agent.targetY = pos.y;
-    agent.idleActivity = (inBurrow && agent.status !== 'sleeping') ? randInt(0, 13) : -1;
+    agent.idleActivity = (inBurrow && agent.status !== 'sleeping') ? randInt(0, 16) : -1;
     if (agent.status === 'error') {
       agent.needsDoctor = true;
       agent.doctorTimer = rand(5, 10);
@@ -3230,7 +3578,7 @@ function updateDemoMode(dt) {
     if (inBurrow) {
       const pos = getBurrowIdlePos(idx);
       agent.targetX = pos.x; agent.targetY = pos.y;
-      agent.idleActivity = (nextStatus !== 'sleeping') ? randInt(0, 13) : -1;
+      agent.idleActivity = (nextStatus !== 'sleeping') ? randInt(0, 16) : -1;
       agent.idleTimer = 0;
     } else {
       const pos = getOfficePos(agent.deskIdx);
@@ -3257,7 +3605,7 @@ function updateDemoMode(dt) {
     demoIdleTimer = 0;
     agents.forEach(agent => {
       if (agent.status === 'idle' || agent.status === 'done') {
-        agent.idleActivity = randInt(0, 13);
+        agent.idleActivity = randInt(0, 16);
         agent.idleTimer = 0;
         agent.idleAnimT = 0;
       }
@@ -3291,8 +3639,12 @@ function updateDemoMode(dt) {
     const dx = agent.targetX - agent.x;
     const dy = agent.targetY - agent.y;
     const d  = Math.hypot(dx, dy);
-    if (d > 2) {
-      const speed = agent.status === 'running' ? 130 : 65;
+    if (d < 2) {
+      // Snap to target — eliminates sub-pixel jitter
+      agent.x = agent.targetX;
+      agent.y = agent.targetY;
+    } else {
+      const speed = agent.status === 'running' ? 180 : 90;
       agent.x += (dx / d) * speed * dt;
       agent.y += (dy / d) * speed * dt;
       agent.facing = dx > 0 ? 1 : -1;
@@ -3819,6 +4171,140 @@ function drawIdleActivity(agent) {
         ctx.save(); ctx.rotate(Math.max(0, (1 - upProg) * 1.5));
         drawRat(agent, 0, 0, 1, 1.50);
         ctx.restore();
+      }
+      break;
+    }
+
+    case 14: { // 💰 Кидает монетки у шеста
+      drawRat(agent, 0, 0, 1, 1.35);
+      // Монетка в лапе
+      ctx.save();
+      ctx.translate(14, -16);
+      const throwPhase = t % 3;
+      if (throwPhase < 1.5) {
+        // Держит и подбрасывает
+        ctx.fillStyle = '#ffdd44';
+        ctx.beginPath();
+        ctx.arc(0, -throwPhase * 8, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#aa8800';
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+      ctx.restore();
+      // Floating 💰
+      const coinT = (t * 0.6) % 2.5;
+      ctx.globalAlpha = Math.max(0, 1 - coinT / 2.5);
+      ctx.font = '12px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('💰', 20, -25 - coinT * 15);
+      ctx.textAlign = 'left';
+      ctx.globalAlpha = 1;
+      // Drool / excited face
+      ctx.fillStyle = '#ff88aa';
+      ctx.beginPath();
+      ctx.ellipse(11, -8, 2, 3, 0, 0, Math.PI);
+      ctx.fill();
+      break;
+    }
+
+    case 15: { // 🍺 Пьёт из автомата, покачивается (drunk)
+      const drunkSway = Math.sin(t * 1.5) * 0.15;
+      ctx.save();
+      ctx.rotate(drunkSway);
+      drawRat(agent, 0, 0, 1, 1.35);
+      ctx.restore();
+      // Банка пива в лапе
+      ctx.save();
+      ctx.translate(14, -14);
+      ctx.rotate(-0.5 + Math.sin(t * 0.7) * 0.3);
+      ctx.fillStyle = '#1a5010';
+      ctx.fillRect(-3, -8, 7, 12);
+      ctx.fillStyle = '#ffcc00';
+      ctx.fillRect(-3, -8, 7, 3);
+      ctx.fillStyle = '#ccc';
+      ctx.fillRect(-2, -9, 5, 1.5);
+      ctx.restore();
+      // Drunk stars/bubbles
+      for (let s = 0; s < 3; s++) {
+        const st = (t * 0.8 + s * 0.7) % 2.5;
+        ctx.globalAlpha = Math.max(0, 1 - st / 2.5);
+        ctx.fillStyle = s % 2 === 0 ? '#ffff44' : '#aaddff';
+        ctx.font = `${6 + s}px serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(s % 2 === 0 ? '★' : '○', 18 + Math.sin(st * 3 + s) * 8, -22 - st * 10);
+        ctx.textAlign = 'left';
+      }
+      ctx.globalAlpha = 1;
+      // Hiccup text
+      if (Math.sin(t * 2.5) > 0.7) {
+        ctx.fillStyle = '#88ccaa';
+        ctx.font = '6px "Share Tech Mono"';
+        ctx.textAlign = 'center';
+        ctx.fillText('*ик*', 25, -35);
+        ctx.textAlign = 'left';
+      }
+      break;
+    }
+
+    case 16: { // 🎰 Дёргает рычаг бандита
+      drawRat(agent, 0, 0, 1, 1.35);
+      const slotPhase = t % 8;
+      // Рычаг (рука тянется вправо)
+      ctx.strokeStyle = '#c8a070';
+      ctx.lineWidth = 2;
+      if (slotPhase < 1) {
+        // Тянет рычаг
+        ctx.beginPath();
+        ctx.moveTo(13, -12);
+        ctx.lineTo(25, -18 + slotPhase * 10);
+        ctx.stroke();
+      } else if (slotPhase < 5) {
+        // Ждёт результат — нервничает
+        const nerveBob = Math.sin(t * 8) * 1.5;
+        ctx.save();
+        ctx.translate(0, nerveBob);
+        // Потеют
+        if (Math.sin(t * 5) > 0.5) {
+          ctx.fillStyle = '#88ccff';
+          ctx.beginPath();
+          ctx.arc(16, -18, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+        // Thought bubble
+        ctx.fillStyle = '#ffffff90';
+        ctx.font = '8px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🤞', 22, -30);
+        ctx.textAlign = 'left';
+      } else if (slotPhase < 6.5) {
+        // Результат — радость!
+        const jumpH = Math.sin((slotPhase - 5) * 4) * 8;
+        ctx.save();
+        ctx.translate(0, -jumpH);
+        ctx.restore();
+        ctx.fillStyle = '#ffdd00';
+        ctx.font = 'bold 8px "Share Tech Mono"';
+        ctx.textAlign = 'center';
+        ctx.fillText('YES!', 15, -35);
+        ctx.textAlign = 'left';
+        // Confetti
+        if (Math.sin(t * 10) > 0.3) {
+          spawnParticle(agent.x + rand(-10, 25), agent.y - 30, rand(-20, 20), rand(-30, -10), 0.8, '#ffdd00', 2, 15);
+        }
+      } else {
+        // Грустит — проиграл
+        ctx.fillStyle = '#aaaaaa';
+        ctx.font = '7px "Share Tech Mono"';
+        ctx.textAlign = 'center';
+        ctx.fillText('...блин', 15, -30);
+        ctx.textAlign = 'left';
+        // Sad face drooping
+        ctx.fillStyle = '#88aaff';
+        ctx.beginPath();
+        ctx.arc(8, -6, 1, 0, Math.PI * 2);
+        ctx.fill();
       }
       break;
     }
@@ -4841,7 +5327,7 @@ function render(timestamp) {
           const healIdx = doctor.targetAgentIdx;
           const pos = getBurrowIdlePos(healIdx);
           tgt.targetX = pos.x; tgt.targetY = pos.y;
-          tgt.idleActivity = randInt(0, 13);
+          tgt.idleActivity = randInt(0, 16);
           tgt.idleTimer = 0; tgt.idleAnimT = 0;
         }
         doctor.phase = 'running-out';
