@@ -338,8 +338,8 @@ function drawBackground() {
 
   // Burrow side
   const burGrad = ctx.createLinearGradient(SPLIT_X, 0, SPLIT_X, H);
-  burGrad.addColorStop(0, '#0d0808');
-  burGrad.addColorStop(1, '#050303');
+  burGrad.addColorStop(0, '#2a1818');
+  burGrad.addColorStop(1, '#1a1010');
   ctx.fillStyle = burGrad;
   ctx.fillRect(SPLIT_X, 0, W - SPLIT_X, H);
 
@@ -355,11 +355,19 @@ function drawBackground() {
 
   // Burrow: warm orange glow from above (rusty lantern vibe)
   const burAtmos = ctx.createLinearGradient(SPLIT_X, 0, SPLIT_X, H * 0.55);
-  burAtmos.addColorStop(0, 'rgba(255,102,0,0.09)');
-  burAtmos.addColorStop(0.5, 'rgba(200,60,0,0.04)');
+  burAtmos.addColorStop(0, 'rgba(255,120,20,0.14)');
+  burAtmos.addColorStop(0.5, 'rgba(220,80,10,0.07)');
   burAtmos.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = burAtmos;
   ctx.fillRect(SPLIT_X, 0, W - SPLIT_X, H * 0.55);
+
+  // Burrow: extra warm ambient overlay for brightness
+  const burWarm = ctx.createLinearGradient(SPLIT_X, 0, SPLIT_X, H);
+  burWarm.addColorStop(0, 'rgba(255,130,50,0.10)');
+  burWarm.addColorStop(0.5, 'rgba(255,110,30,0.05)');
+  burWarm.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = burWarm;
+  ctx.fillRect(SPLIT_X, 0, W - SPLIT_X, H);
 }
 
 // ============================================================
@@ -770,17 +778,26 @@ function drawWhiteboard() {
   const ww = SPLIT_X * 0.3;
   const wh = H * 0.15;
 
-  // Board
-  ctx.fillStyle = '#e8e8e0';
-  ctx.strokeStyle = '#888';
+  // Board — dark cyberpunk style
+  ctx.fillStyle = '#1a1a2a';
+  ctx.strokeStyle = '#00ff8844';
   ctx.lineWidth = 2;
   drawRoundRect(wx, wy, ww, wh, 3);
   ctx.fill();
   ctx.stroke();
 
-  // Frame
-  ctx.strokeStyle = '#444';
-  ctx.lineWidth = 3;
+  // Neon glow on edges
+  ctx.save();
+  ctx.shadowColor = '#00ff88';
+  ctx.shadowBlur = 12;
+  ctx.strokeStyle = '#00ff8866';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(wx, wy, ww, wh);
+  ctx.restore();
+
+  // Frame — neon thin line
+  ctx.strokeStyle = '#00ff8855';
+  ctx.lineWidth = 1.5;
   ctx.strokeRect(wx - 1, wy - 1, ww + 2, wh + 2);
 
   // Content
@@ -789,18 +806,21 @@ function drawWhiteboard() {
   ctx.rect(wx + 4, wy + 4, ww - 8, wh - 8);
   ctx.clip();
 
-  // "MaxMaster v2.0" title
+  // "MaxMaster v2.0" title — neon green
   ctx.font = 'bold 10px "Share Tech Mono", monospace';
-  ctx.fillStyle = '#1a1a8a';
+  ctx.fillStyle = '#00ff88';
+  ctx.shadowColor = '#00ff88';
+  ctx.shadowBlur = 6;
   ctx.fillText('MaxMaster v2.0', wx + 10, wy + 18);
+  ctx.shadowBlur = 0;
 
-  // Boxes and arrows
-  ctx.strokeStyle = '#333';
+  // Boxes and arrows — neon green outlines
+  ctx.strokeStyle = '#00cc66';
   ctx.lineWidth = 1;
   // Box 1
   ctx.strokeRect(wx + 10, wy + 25, 35, 18);
   ctx.font = '7px "Share Tech Mono", monospace';
-  ctx.fillStyle = '#333';
+  ctx.fillStyle = '#00ff88';
   ctx.fillText('Frontend', wx + 13, wy + 36);
   // Box 2
   ctx.strokeRect(wx + 70, wy + 25, 35, 18);
@@ -824,29 +844,29 @@ function drawWhiteboard() {
   ctx.lineTo(wx + 87, wy + 50);
   ctx.stroke();
 
-  // Formulas
-  ctx.fillStyle = '#aa2222';
+  // Formulas — neon magenta accent
+  ctx.fillStyle = '#ff44aa';
   ctx.font = '6px "Share Tech Mono", monospace';
   ctx.fillText('O(n log n)', wx + ww - 55, wy + 18);
   ctx.fillText('CAC < LTV', wx + ww - 55, wy + 28);
 
-  // Stickers
-  ctx.fillStyle = '#ffe066';
+  // Stickers — slightly darker but still visible
+  ctx.fillStyle = '#4a3a00';
   ctx.fillRect(wx + ww - 40, wy + 50, 25, 20);
-  ctx.fillStyle = '#333';
+  ctx.fillStyle = '#ffe066';
   ctx.font = '5px sans-serif';
   ctx.fillText('TODO:', wx + ww - 38, wy + 58);
   ctx.fillText('deploy!', wx + ww - 38, wy + 65);
 
-  ctx.fillStyle = '#ff8866';
+  ctx.fillStyle = '#3a1a10';
   ctx.fillRect(wx + 10, wy + 55, 25, 20);
-  ctx.fillStyle = '#333';
+  ctx.fillStyle = '#ff8866';
   ctx.fillText('FIX:', wx + 12, wy + 63);
   ctx.fillText('auth bug', wx + 12, wy + 70);
 
   // Random scribble that changes
   const scribblePhase = Math.floor(frameCount / 600) % 4;
-  ctx.strokeStyle = '#2244aa50';
+  ctx.strokeStyle = '#00ff8840';
   ctx.lineWidth = 0.7;
   ctx.beginPath();
   const sx = wx + 120 + scribblePhase * 3;
@@ -967,11 +987,11 @@ function drawCoffeeMachine() {
 // ============================================================
 function drawBurrowFloor() {
   // Wooden/dirt floor
-  ctx.fillStyle = '#0c0606';
+  ctx.fillStyle = '#150a0a';
   ctx.fillRect(SPLIT_X, H * 0.88, W - SPLIT_X, H * 0.12);
 
   // Floor lines
-  ctx.strokeStyle = '#1a0a0a';
+  ctx.strokeStyle = '#2a1515';
   ctx.lineWidth = 0.5;
   for (let x = SPLIT_X; x < W; x += 30) {
     ctx.beginPath();
@@ -986,28 +1006,28 @@ function drawCouch() {
   const { x, y, w, h } = bp.couch;
 
   // Couch body
-  ctx.fillStyle = '#2a1a1a';
-  ctx.strokeStyle = '#3a2020';
+  ctx.fillStyle = '#382525';
+  ctx.strokeStyle = '#4d3030';
   ctx.lineWidth = 1.5;
   drawRoundRect(x, y, w, h, 6);
   ctx.fill();
   ctx.stroke();
 
   // Back cushion
-  ctx.fillStyle = '#3a2222';
+  ctx.fillStyle = '#4d3030';
   drawRoundRect(x + 3, y - 20, w - 6, 25, 4);
   ctx.fill();
 
   // Seat cushions
-  ctx.fillStyle = '#331a1a';
+  ctx.fillStyle = '#442828';
   drawRoundRect(x + 5, y + 5, w / 2 - 7, h - 10, 4);
   ctx.fill();
-  ctx.fillStyle = '#2d1818';
+  ctx.fillStyle = '#3e2525';
   drawRoundRect(x + w / 2 + 2, y + 5, w / 2 - 7, h - 10, 4);
   ctx.fill();
 
   // Pillow 1
-  ctx.fillStyle = '#4a2a2a';
+  ctx.fillStyle = '#5e3838';
   ctx.save();
   ctx.translate(x + 15, y - 10);
   ctx.rotate(-0.2);
@@ -1099,15 +1119,15 @@ function drawTV() {
   const { x, y, w, h } = bp.tv;
 
   // TV stand
-  ctx.fillStyle = '#1a1010';
+  ctx.fillStyle = '#2a2020';
   ctx.fillRect(x + 10, y + h, w - 20, 15);
   // Legs
   ctx.fillRect(x + 15, y + h + 15, 6, 10);
   ctx.fillRect(x + w - 21, y + h + 15, 6, 10);
 
   // TV body (chunky old CRT)
-  ctx.fillStyle = '#1a1a1a';
-  ctx.strokeStyle = '#2a2020';
+  ctx.fillStyle = '#2a2a2a';
+  ctx.strokeStyle = '#3a3030';
   ctx.lineWidth = 2;
   drawRoundRect(x, y, w, h, 6);
   ctx.fill();
@@ -1262,20 +1282,20 @@ function drawBed() {
   const { x, y, w, h } = bp.bed;
 
   // Bed frame
-  ctx.fillStyle = '#1a1510';
-  ctx.strokeStyle = '#2a2015';
+  ctx.fillStyle = '#2a2520';
+  ctx.strokeStyle = '#3a3025';
   ctx.lineWidth = 1;
   drawRoundRect(x, y, w, h, 3);
   ctx.fill();
   ctx.stroke();
 
   // Mattress
-  ctx.fillStyle = '#2a2525';
+  ctx.fillStyle = '#3a3535';
   drawRoundRect(x + 3, y + 3, w - 6, h - 6, 2);
   ctx.fill();
 
   // Rumpled blanket
-  ctx.fillStyle = '#2a3040';
+  ctx.fillStyle = '#3a4050';
   ctx.beginPath();
   ctx.moveTo(x + 10, y + 5);
   ctx.quadraticCurveTo(x + w * 0.3, y - 5, x + w * 0.5, y + 8);
@@ -1343,8 +1363,8 @@ function drawPizzaTower() {
   for (let b = 0; b < 6; b++) {
     const bx = x + Math.sin(b * 0.7) * 3;
     const by = y - b * boxH;
-    ctx.fillStyle = b === 5 ? '#8a6a3a' : '#6a4a2a';
-    ctx.strokeStyle = '#4a3a1a';
+    ctx.fillStyle = b === 5 ? '#a08050' : '#856040';
+    ctx.strokeStyle = '#5e4a28';
     ctx.lineWidth = 0.5;
     drawRoundRect(bx, by, boxW, boxH, 1);
     ctx.fill();
@@ -1799,6 +1819,9 @@ function drawOfficeDecorations() {
 
 function drawBurrowDecorations() {
   drawBurrowFloor();
+  // Apply brightness boost to all burrow decorations
+  ctx.save();
+  ctx.filter = 'brightness(1.35) contrast(1.1)';
   drawCouch();
   drawTV();
   drawBed();
@@ -1806,6 +1829,8 @@ function drawBurrowDecorations() {
   drawBeerCans();
   drawFridge();
   drawCheeseOnFloor();
+  ctx.filter = 'none';
+  ctx.restore();
   drawSpiderweb();
   drawWallCracks();
   drawBurrowCables();
@@ -3013,15 +3038,33 @@ function getOfficePos(deskIdx) {
 
 function getBurrowIdlePos(agentIdx) {
   const bp = getBurrowPositions();
-  const positions = [
-    { x: bp.couch.x + 20 + (agentIdx % 4) * 25, y: bp.couch.y + bp.couch.h - 8 },
-    { x: bp.bed.x + 15 + (agentIdx % 3) * 20,   y: bp.bed.y + bp.bed.h - 10 },
-    { x: bp.pizza.x + (agentIdx % 3) * 20,       y: bp.pizza.y - 8 },
-    { x: bp.tv.x + 10 + (agentIdx % 3) * 18,     y: bp.tv.y + bp.tv.h + 20 },
-    { x: bp.couch.x + 80 + (agentIdx % 3) * 15,  y: bp.couch.y + 15 },
-    { x: SPLIT_X + 60 + agentIdx * 22,            y: H * 0.73 },
+  // Fixed unique spots per agent — spread across full burrow zone, min ~60px apart
+  // Each spot is anchored to a specific decoration
+  const spots = [
+    // 0 — у дивана слева (сидит)
+    { x: bp.couch.x + 15,                        y: bp.couch.y + bp.couch.h + 8 },
+    // 1 — у ТВ (смотрит)
+    { x: bp.tv.x - 20,                           y: bp.tv.y + bp.tv.h + 18 },
+    // 2 — у кровати (лежит)
+    { x: bp.bed.x + 20,                          y: bp.bed.y + bp.bed.h + 8 },
+    // 3 — у пицца-башни
+    { x: bp.pizza.x + 25,                        y: bp.pizza.y - 15 },
+    // 4 — у холодильника
+    { x: bp.fridge.x - 35,                       y: bp.fridge.y + bp.fridge.h - 5 },
+    // 5 — у дивана справа (на спинке)
+    { x: bp.couch.x + bp.couch.w - 25,           y: bp.couch.y - 15 },
+    // 6 — у ТВ правее (второй зритель)
+    { x: bp.tv.x + bp.tv.w + 30,                 y: bp.tv.y + bp.tv.h + 10 },
+    // 7 — у кровати правее
+    { x: bp.bed.x + bp.bed.w - 15,               y: bp.bed.y + 25 },
+    // 8 — у сыра на полу
+    { x: bp.cheese.x + 15,                       y: bp.cheese.y - 10 },
+    // 9 — центр норы (у банок)
+    { x: bp.cans.x + 20,                         y: bp.cans.y - 12 },
+    // 10 — у холодильника сбоку
+    { x: bp.fridge.x + bp.fridge.w + 20,         y: bp.fridge.y + bp.fridge.h * 0.5 },
   ];
-  return positions[agentIdx % positions.length];
+  return spots[agentIdx % spots.length];
 }
 
 function getHolePos() {
@@ -3196,7 +3239,7 @@ function drawIdleActivity(agent) {
   switch (act) {
 
     case 0: { // 🍺 Пьёт пиво — BUUUURP
-      drawRat(agent, 0, 0, 1, 0.9);
+      drawRat(agent, 0, 0, 1, 1.35);
       // Beer can in raised paw
       ctx.save();
       ctx.translate(13, -18);
@@ -3224,7 +3267,7 @@ function drawIdleActivity(agent) {
     }
 
     case 1: { // 🎮 Играет, бросает геймпад
-      drawRat(agent, 0, 0, 1, 0.9);
+      drawRat(agent, 0, 0, 1, 1.35);
       // Gamepad
       ctx.fillStyle = '#222';
       drawRoundRect(9, -20, 22, 14, 4);
@@ -3248,7 +3291,7 @@ function drawIdleActivity(agent) {
     }
 
     case 2: { // 🍕 Жрёт пиццу
-      drawRat(agent, 0, 0, 1, 0.9);
+      drawRat(agent, 0, 0, 1, 1.35);
       // Pizza slice being devoured
       ctx.save();
       ctx.translate(16, -18);
@@ -3280,7 +3323,7 @@ function drawIdleActivity(agent) {
       ctx.save();
       ctx.translate(0, 8);
       ctx.rotate(Math.PI * 0.48);
-      drawRat(agent, 0, 0, 1, 0.8);
+      drawRat(agent, 0, 0, 1, 1.20);
       ctx.restore();
       // ZZZ floating
       for (let z = 0; z < 4; z++) {
@@ -3297,7 +3340,7 @@ function drawIdleActivity(agent) {
     }
 
     case 4: { // 🧀 Грызёт сыр
-      drawRat(agent, 0, 0, 1, 0.9);
+      drawRat(agent, 0, 0, 1, 1.35);
       // Cheese block gnawing
       ctx.save();
       ctx.translate(15, -14);
@@ -3326,7 +3369,7 @@ function drawIdleActivity(agent) {
         const fightBob = Math.sin(t * 12) * 3;
         ctx.save();
         ctx.translate(0, fightBob);
-        drawRat(agent, 0, 0, 1, 0.9);
+        drawRat(agent, 0, 0, 1, 1.35);
         ctx.restore();
         // Punch flash
         if (Math.sin(t * 9) > 0.4) {
@@ -3348,12 +3391,12 @@ function drawIdleActivity(agent) {
         // Крыса 1 (основная)
         ctx.save();
         ctx.translate(-12, 0);
-        drawRat(agent, 0, 0, 1, 0.9);
+        drawRat(agent, 0, 0, 1, 1.35);
         ctx.restore();
         // Крыса 2 (серая друг)
         ctx.save();
         ctx.translate(18, 0);
-        drawRat(agent, 0, 0, -1, 0.9);
+        drawRat(agent, 0, 0, -1, 1.35);
         ctx.restore();
         // Банки пива у каждой
         [[-8, 0], [10, 0]].forEach(([bx, by]) => {
@@ -3380,7 +3423,7 @@ function drawIdleActivity(agent) {
     }
 
     case 6: { // 📺 Смотрит ТВ не моргая
-      drawRat(agent, 0, 0, 1, 0.9);
+      drawRat(agent, 0, 0, 1, 1.35);
       // Wide open eyes override
       ctx.fillStyle = '#fff';
       ctx.beginPath(); ctx.arc(3, -15, 3, 0, Math.PI * 2); ctx.fill();
@@ -3411,7 +3454,7 @@ function drawIdleActivity(agent) {
       ctx.save();
       ctx.translate(0, bob);
       ctx.rotate(tilt);
-      drawRat(agent, 0, 0, Math.sin(t * 6) > 0 ? 1 : -1, 1.0);
+      drawRat(agent, 0, 0, Math.sin(t * 6) > 0 ? 1 : -1, 1.50);
       ctx.restore();
       // Music notes
       ['♪','♫','♩','♬'].forEach((note, i) => {
@@ -3437,7 +3480,7 @@ function drawIdleActivity(agent) {
 
       if (loop8 < cat8Phase) {
         // === ЛАЗЕРНАЯ УКАЗКА ===
-        drawRat(agent, 0, 0, 1, 0.9);
+        drawRat(agent, 0, 0, 1, 1.35);
         const la = Math.sin(t * 1.8) * 0.9;
         ctx.strokeStyle = '#ff000080'; ctx.lineWidth = 1;
         ctx.beginPath();
@@ -3475,7 +3518,7 @@ function drawIdleActivity(agent) {
         const runOffX = -runProgress * 35;
         ctx.save();
         ctx.translate(runOffX, runBob);
-        drawRat(agent, 0, 0, -1, 0.9); // лицом влево
+        drawRat(agent, 0, 0, -1, 1.35); // лицом влево
         ctx.restore();
         // LOL над головой — появляется в конце фазы
         if (runProgress > 0.6) {
@@ -3534,7 +3577,7 @@ function drawIdleActivity(agent) {
     }
 
     case 10: { // 🤢 Рыгает в углу
-      drawRat(agent, -8, 0, 1, 0.85);
+      drawRat(agent, -8, 0, 1, 1.06);
       // Heave animation
       const heave = Math.sin(t * 4) > 0.5;
       if (heave) {
@@ -3601,7 +3644,7 @@ function drawIdleActivity(agent) {
     }
 
     case 12: { // 📱 Тупит в телефон
-      drawRat(agent, 0, 0, 1, 0.95);
+      drawRat(agent, 0, 0, 1, 1.43);
       // Phone in paw
       ctx.fillStyle = '#222'; ctx.strokeStyle = '#555'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.roundRect(10, -18, 12, 20, 2); ctx.fill(); ctx.stroke();
@@ -3638,7 +3681,7 @@ function drawIdleActivity(agent) {
         // Swaying
         const sway = Math.sin(t * 1.4) * 0.18;
         ctx.save(); ctx.rotate(sway);
-        drawRat(agent, 0, 0, 1, 1.0);
+        drawRat(agent, 0, 0, 1, 1.50);
         ctx.restore();
         // Zzz
         ['z','Z','Z'].forEach((z, i) => {
@@ -3652,12 +3695,12 @@ function drawIdleActivity(agent) {
         // Falling — tilt
         const fallProg = ((t * 0.3) % 1) * 4 - 1; // 0..1
         ctx.save(); ctx.rotate(Math.min(1.5, fallProg * 1.8));
-        drawRat(agent, 0, 0, 1, 1.0);
+        drawRat(agent, 0, 0, 1, 1.50);
         ctx.restore();
       } else if (fallPhase === 2) {
         // On the floor
         ctx.save(); ctx.rotate(Math.PI * 0.5);
-        drawRat(agent, 0, 0, 1, 1.0);
+        drawRat(agent, 0, 0, 1, 1.50);
         ctx.restore();
         ctx.fillStyle = '#ffff00'; ctx.font = '10px serif';
         ctx.textAlign = 'center'; ctx.fillText('★', -12, -4); ctx.textAlign = 'left';
@@ -3665,14 +3708,14 @@ function drawIdleActivity(agent) {
         // Getting up
         const upProg = ((t * 0.3) % 1) * 4 - 3;
         ctx.save(); ctx.rotate(Math.max(0, (1 - upProg) * 1.5));
-        drawRat(agent, 0, 0, 1, 1.0);
+        drawRat(agent, 0, 0, 1, 1.50);
         ctx.restore();
       }
       break;
     }
 
     default:
-      drawRat(agent, 0, 0, 1, 1.0);
+      drawRat(agent, 0, 0, 1, 1.50);
       break;
   }
 
@@ -4410,7 +4453,7 @@ function render(timestamp) {
       ctx.save();
       ctx.rotate(Math.PI / 2);
       ctx.filter = 'grayscale(100%) brightness(0.5)';
-      drawRat(agent, 0, 0, 1, 0.85);
+      drawRat(agent, 0, 0, 1, 1.28);
       ctx.filter = 'none';
       ctx.restore();
 
@@ -4489,7 +4532,7 @@ function render(timestamp) {
       ctx.save();
       ctx.translate(0, dBob);
       ctx.rotate(dTilt);
-      drawRat(agent, 0, 0, Math.sin(agent.danceT * 6) > 0 ? 1 : -1, 1.0);
+      drawRat(agent, 0, 0, Math.sin(agent.danceT * 6) > 0 ? 1 : -1, 1.50);
       ctx.restore();
       // Music notes
       ['♪','♫','♩','♬'].forEach((note, ni) => {
@@ -4509,7 +4552,7 @@ function render(timestamp) {
       ctx.save();
       ctx.translate(agent.x, agent.y + 8);
       ctx.rotate(Math.PI / 2); // лежит на боку
-      drawRat(agent, 0, 0, 1, 0.9);
+      drawRat(agent, 0, 0, 1, 1.35);
       ctx.restore();
       // Одеяло
       ctx.save();
@@ -4549,7 +4592,7 @@ function render(timestamp) {
       ctx.translate(agent.x, agent.y + 6);
       ctx.rotate(Math.PI / 2); // лежит
       // Рисуем крысу с X_X глазами
-      drawRat(agent, 0, 0, 1, 0.9);
+      drawRat(agent, 0, 0, 1, 1.35);
       // Перекрываем глаза крестиками
       ctx.strokeStyle = '#ff2244';
       ctx.lineWidth = 2;
@@ -4579,7 +4622,7 @@ function render(timestamp) {
       // Lean forward toward monitor slightly
       ctx.translate(3, bob);
       ctx.rotate(0.08);
-      drawRat(agent, 0, 0, agent.facing, 1.0);
+      drawRat(agent, 0, 0, agent.facing, 1.50);
       ctx.restore();
 
       // Spark particles above desk (periodic)
