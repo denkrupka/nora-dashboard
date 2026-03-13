@@ -4173,13 +4173,27 @@ function updateDemoMode(dt) {
     if (tickerText.length > 800) tickerText = tickerText.slice(300);
   }
 
-  // Move agents toward targets
+  // Random flying packets every 3-5 seconds
+  if (demoPacketTimer >= demoPacketInterval) {
+    demoPacketTimer = 0;
+    demoPacketInterval = rand(3, 5);
+    const fromIdx = randInt(0, agents.length - 1);
+    let toIdx = randInt(0, agents.length - 2);
+    if (toIdx >= fromIdx) toIdx++;
+    spawnPacket(agents[fromIdx].def.id, agents[toIdx].def.id, pick(PACKET_TASK_TYPES));
+  }
+}
+
+// ============================================================
+// ALWAYS-ON AGENT UPDATE (movement, idle, doctor — works in both DEMO and LIVE)
+// ============================================================
+function updateAgentsAlways(dt) {
+  // Move agents toward targets (smooth walk)
   agents.forEach(agent => {
     const dx = agent.targetX - agent.x;
     const dy = agent.targetY - agent.y;
     const d  = Math.hypot(dx, dy);
     if (d < 2) {
-      // Snap to target — eliminates sub-pixel jitter
       agent.x = agent.targetX;
       agent.y = agent.targetY;
     } else {
@@ -4188,11 +4202,28 @@ function updateDemoMode(dt) {
       agent.y += (dy / d) * speed * dt;
       agent.facing = dx > 0 ? 1 : -1;
     }
-    agent.idleAnimT += dt;
+  });
+
+  // Idle animation time + activity cycling (for ALL idle/done agents)
+  agents.forEach(agent => {
+    const isIdle = (agent.status === 'idle' || agent.status === 'done');
+    if (isIdle) {
+      // Assign initial idle activity if not set
+      if (agent.idleActivity == null || agent.idleActivity < 0) {
+        agent.idleActivity = randInt(0, 19);
+        agent.idleAnimT = 0;
+      }
+      agent.idleAnimT += dt;
+      // Cycle to new activity every 15-20 seconds
+      if (agent.idleAnimT > 15 + Math.random() * 5) {
+        agent.idleActivity = randInt(0, 19);
+        agent.idleAnimT = 0;
+      }
+    }
     agent.uptime_seconds += dt;
   });
 
-  // Doctor trigger
+  // Doctor trigger (always active)
   agents.forEach((agent, idx) => {
     if (agent.needsDoctor) {
       agent.doctorTimer -= dt;
@@ -4203,17 +4234,7 @@ function updateDemoMode(dt) {
     }
   });
 
-  // Random flying packets every 3-5 seconds
-  if (demoPacketTimer >= demoPacketInterval) {
-    demoPacketTimer = 0;
-    demoPacketInterval = rand(3, 5);
-    const fromIdx = randInt(0, agents.length - 1);
-    let toIdx = randInt(0, agents.length - 2);
-    if (toIdx >= fromIdx) toIdx++;
-    spawnPacket(agents[fromIdx].def.id, agents[toIdx].def.id, pick(PACKET_TASK_TYPES));
-  }
-
-  // Easter egg timer
+  // Easter egg timer (always active)
   cheeseClickTimer = Math.max(0, cheeseClickTimer - dt);
   if (cheeseClickTimer === 0) cheeseClicks = 0;
   if (easterEggActive) {
@@ -5666,6 +5687,7 @@ function render(timestamp) {
 
   // Update simulation
   if (DEMO_MODE) updateDemoMode(deltaTime);
+  updateAgentsAlways(deltaTime);
 
   // Advance ticker scroll
   tickerOffset += 55 * deltaTime;

@@ -150,3 +150,14 @@ Z-depth: ближе к низу = поверх дальних.
 
 ## ВАЖНО
 Файл будет 3000-5000+ строк. Это нормально. НЕ используй TODO/placeholder. Каждый агент уникально нарисован. Каждая idle-анимация реализована. Каждая декорация на месте.
+
+---
+
+### Обновления 2026-03-13
+- Flying packets анимация (task_flow → Realtime)
+- LIVE MODE: Supabase подключён (agent_status, provider_tokens, task_flow)
+- 10 новых декораций: RAT INVADERS, SPRINT PLANNING дартс, MONSTER RAT вендинг, СЕРВЕРНАЯ→ТУАЛЕТ, GOSSIP ZONE кулер, DEADLINE груша, DO NOT DISTURB гамак, AGILE IS A LIE граффити, HOME SWEET SEWER неон, FOR THE RAT KING сырный трон
+- Жёсткий тикер (20 сообщений, сарказм)
+- 8 рабочих столов, оптимизация fps (shadowBlur убран из декораций)
+- Idle агенты → нора, working → офис
+- Header + тикер видимы
