@@ -282,18 +282,18 @@ function drawPackets(ctx) {
     }
     ctx.globalAlpha = 1;
 
-    // Glow
-    ctx.save();
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = p.color;
-
-    // Main sphere
+    // Glow (cheap: semi-transparent larger circle instead of shadowBlur)
+    ctx.globalAlpha = 0.15;
     ctx.beginPath();
-    ctx.arc(x, y, 7, 0, Math.PI * 2);
+    ctx.arc(x, y, 14, 0, Math.PI * 2);
     ctx.fillStyle = p.color;
     ctx.fill();
 
-    ctx.restore();
+    // Main sphere
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.arc(x, y, 7, 0, Math.PI * 2);
+    ctx.fill();
 
     // Task type label
     ctx.font = "8px 'Share Tech Mono', monospace";
@@ -563,8 +563,13 @@ function drawWallHole() {
   for (let i = 1; i <= steps; i++) ctx.lineTo(pts2[i].lx, pts2[i].y);
   for (let i = steps; i >= 0; i--) ctx.lineTo(pts2[i].rx, pts2[i].y);
   ctx.closePath();
-  ctx.shadowColor = '#ff6600';
-  ctx.shadowBlur  = 18;
+  // Outer glow layer (cheap replacement for shadowBlur)
+  ctx.strokeStyle = 'rgba(255,100,20,0.1)';
+  ctx.lineWidth   = 16;
+  ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,100,20,0.25)';
+  ctx.lineWidth   = 6;
+  ctx.stroke();
   ctx.strokeStyle = 'rgba(255,100,20,0.6)';
   ctx.lineWidth   = 2.5;
   ctx.stroke();
@@ -908,14 +913,13 @@ function drawWhiteboard() {
   ctx.fill();
   ctx.stroke();
 
-  // Neon glow on edges
-  ctx.save();
-  ctx.shadowColor = '#00ff88';
-  ctx.shadowBlur = 12;
+  // Neon glow on edges (cheap: wider semi-transparent stroke)
+  ctx.strokeStyle = 'rgba(0,255,136,0.08)';
+  ctx.lineWidth = 10;
+  ctx.strokeRect(wx, wy, ww, wh);
   ctx.strokeStyle = '#00ff8866';
   ctx.lineWidth = 1.5;
   ctx.strokeRect(wx, wy, ww, wh);
-  ctx.restore();
 
   // Frame — neon thin line
   ctx.strokeStyle = '#00ff8855';
@@ -931,10 +935,10 @@ function drawWhiteboard() {
   // "MaxMaster v2.0" title — neon green
   ctx.font = 'bold 10px "Share Tech Mono", monospace';
   ctx.fillStyle = '#00ff88';
-  ctx.shadowColor = '#00ff88';
-  ctx.shadowBlur = 6;
+  ctx.globalAlpha = 0.3;
   ctx.fillText('MaxMaster v2.0', wx + 10, wy + 18);
-  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+  ctx.fillText('MaxMaster v2.0', wx + 10, wy + 18);
 
   // Boxes and arrows — neon green outlines
   ctx.strokeStyle = '#00cc66';
@@ -2048,11 +2052,11 @@ function drawStripperPole(ctx, x, y, t) {
   ctx.fillStyle = '#ff69b4';
   ctx.font = 'bold 10px "Share Tech Mono"';
   ctx.textAlign = 'center';
-  // Glow
-  ctx.shadowColor = '#ff69b4';
-  ctx.shadowBlur = 12;
+  // Glow (cheap: semi-transparent text underneath instead of shadowBlur)
+  ctx.globalAlpha = neonFlicker * 0.3;
   ctx.fillText('MOUSETRAP', 0, -poleH - 12);
-  ctx.shadowBlur = 0;
+  ctx.globalAlpha = neonFlicker;
+  ctx.fillText('MOUSETRAP', 0, -poleH - 12);
   ctx.globalAlpha = 1;
   ctx.textAlign = 'left';
 
@@ -2096,12 +2100,12 @@ function drawBeerMachine(ctx, x, y, w, h, t) {
   const brewFlicker = 0.75 + Math.sin(t * 6) * 0.15 + Math.sin(t * 11) * 0.1;
   ctx.globalAlpha = brewFlicker;
   ctx.fillStyle = '#00ff66';
-  ctx.shadowColor = '#00ff66';
-  ctx.shadowBlur = 8;
   ctx.font = 'bold 9px "Share Tech Mono"';
   ctx.textAlign = 'center';
+  ctx.globalAlpha = brewFlicker * 0.3;
   ctx.fillText('RAT BREW', w / 2, 16);
-  ctx.shadowBlur = 0;
+  ctx.globalAlpha = brewFlicker;
+  ctx.fillText('RAT BREW', w / 2, 16);
   ctx.globalAlpha = 1;
 
   // LED экран с бегущей ценой
@@ -2180,12 +2184,12 @@ function drawSlotMachine(ctx, x, y, w, h, t) {
   const vegasFlicker = 0.8 + Math.sin(t * 7) * 0.12 + Math.cos(t * 11) * 0.08;
   ctx.globalAlpha = vegasFlicker;
   ctx.fillStyle = '#ffcc00';
-  ctx.shadowColor = '#ffcc00';
-  ctx.shadowBlur = 10;
   ctx.font = 'bold 8px "Share Tech Mono"';
   ctx.textAlign = 'center';
+  ctx.globalAlpha = vegasFlicker * 0.3;
   ctx.fillText('RAT VEGAS', w / 2, -5);
-  ctx.shadowBlur = 0;
+  ctx.globalAlpha = vegasFlicker;
+  ctx.fillText('RAT VEGAS', w / 2, -5);
   ctx.globalAlpha = 1;
 
   // 3 слота
@@ -2220,11 +2224,11 @@ function drawSlotMachine(ctx, x, y, w, h, t) {
     // JACKPOT! text
     const jpFlash = Math.sin(t * 12) > 0 ? '#ffdd00' : '#ff4400';
     ctx.fillStyle = jpFlash;
-    ctx.shadowColor = '#ffdd00';
-    ctx.shadowBlur = 15;
     ctx.font = 'bold 12px "Share Tech Mono"';
+    ctx.globalAlpha = 0.3;
     ctx.fillText('JACKPOT!', w / 2, 52);
-    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+    ctx.fillText('JACKPOT!', w / 2, 52);
     // Golden particles
     for (let p = 0; p < 2; p++) {
       spawnParticle(x + w / 2 + rand(-20, 20), y + 10, rand(-30, 30), rand(-50, -20), 1.2, '#ffdd00', 3, 15, '★');
@@ -2696,20 +2700,22 @@ function drawNeonSign(ctx, x, y, w, t) {
   ctx.font = 'bold 7px "Share Tech Mono"';
   ctx.textAlign = 'center';
   const letterW = w / text.length;
+  // First pass: dim glow layer (cheap replacement for shadowBlur)
   for (let i = 0; i < text.length; i++) {
     let alpha = 1;
-    if (i === flickerIdx) {
-      alpha = 0.2 + Math.sin(t * 12) * 0.4;
-    }
-    ctx.globalAlpha = Math.max(0.1, alpha);
-    // Alternate green/pink
+    if (i === flickerIdx) alpha = 0.2 + Math.sin(t * 12) * 0.4;
+    ctx.globalAlpha = Math.max(0.1, alpha) * 0.25;
     ctx.fillStyle = i % 2 === 0 ? '#00ff88' : '#ff44aa';
-    // Glow
-    ctx.shadowColor = i % 2 === 0 ? '#00ff88' : '#ff44aa';
-    ctx.shadowBlur = 6;
     ctx.fillText(text[i], letterW * i + letterW / 2, 10);
   }
-  ctx.shadowBlur = 0;
+  // Second pass: solid text on top
+  for (let i = 0; i < text.length; i++) {
+    let alpha = 1;
+    if (i === flickerIdx) alpha = 0.2 + Math.sin(t * 12) * 0.4;
+    ctx.globalAlpha = Math.max(0.1, alpha);
+    ctx.fillStyle = i % 2 === 0 ? '#00ff88' : '#ff44aa';
+    ctx.fillText(text[i], letterW * i + letterW / 2, 10);
+  }
   ctx.globalAlpha = 1;
   ctx.textAlign = 'left';
   ctx.restore();
@@ -5256,8 +5262,8 @@ function drawHeader(ctx, w, h) {
   ctx.font = "bold 17px 'Orbitron', sans-serif";
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  ctx.shadowColor = '#00ff88';
-  ctx.shadowBlur = Math.round(20 * logoGlow);
+  ctx.fillStyle = `rgba(0,${Math.round(200 + 55 * logoGlow)},${Math.round(80 + 56 * logoGlow)},${0.2 * logoGlow})`;
+  ctx.fillText('🐀 КРЫСИНАЯ НОРА', 14, HH / 2);
   ctx.fillStyle = `rgba(0,${Math.round(200 + 55 * logoGlow)},${Math.round(80 + 56 * logoGlow)},1)`;
   ctx.fillText('🐀 КРЫСИНАЯ НОРА', 14, HH / 2);
   ctx.restore();
@@ -5290,12 +5296,8 @@ function drawHeader(ctx, w, h) {
     ctx.stroke();
 
     // Badge text
-    ctx.save();
-    ctx.shadowColor = b.color;
-    ctx.shadowBlur = 5;
     ctx.fillStyle = b.color;
     ctx.fillText(label, bx + 8, HH / 2);
-    ctx.restore();
 
     bx += tw + 6;
   });
@@ -5326,14 +5328,10 @@ function drawHeader(ctx, w, h) {
 
     // Bar fill (warn colours)
     const fillCol = used > 0.85 ? '#ff2244' : used > 0.65 ? '#ffaa00' : color;
-    ctx.save();
-    ctx.shadowColor = fillCol;
-    ctx.shadowBlur  = 5;
     ctx.fillStyle   = fillCol;
     const fw = Math.max(3, mW * used);
     drawRoundRect(mx, HH / 2 - 3, fw, mH, 2);
     ctx.fill();
-    ctx.restore();
 
     // Percent
     ctx.font = "7px 'Share Tech Mono', monospace";
@@ -5357,15 +5355,16 @@ function drawHeader(ctx, w, h) {
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  // Dot
-  ctx.save();
-  ctx.shadowColor = dotCol;
-  ctx.shadowBlur  = 14 * pulse;
+  // Dot (cheap glow: larger semi-transparent circle)
+  ctx.globalAlpha = 0.15 * pulse;
   ctx.fillStyle   = dotCol;
+  ctx.beginPath();
+  ctx.arc(dotX, dotY, 5 + 10 * pulse, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
   ctx.beginPath();
   ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
   ctx.fill();
-  ctx.restore();
 
   ctx.font = "9px 'Share Tech Mono', monospace";
   ctx.fillStyle = dotCol;
@@ -5409,16 +5408,12 @@ function drawTicker(ctx, w, h, t) {
   // Scroll offset updated in render loop
   const drawX = 72 + (w - 72) - tickerOffset;
 
-  ctx.save();
-  ctx.shadowColor = '#00ff88';
-  ctx.shadowBlur  = 8;
   ctx.fillStyle   = '#00cc66';
   ctx.textAlign   = 'left';
   ctx.textBaseline = 'middle';
   ctx.fillText(fullText, drawX, ty + TH / 2);
   // Second copy for seamless loop
   ctx.fillText(fullText, drawX + tw + 60, ty + TH / 2);
-  ctx.restore();
 
   ctx.restore(); // unclip
 
@@ -5516,11 +5511,32 @@ function applyAgentRow(row) {
   if (!row || !row.id) return;
   const ag = agents.find(a => a.def.id === row.id);
   if (!ag) return;
+  const prevStatus = ag.status;
   if (row.status)       ag.status       = row.status;
   if (row.task)         ag.task         = row.task;
   if (row.tokens_used != null) ag.tokens_used = row.tokens_used;
   if (row.commits != null)     ag.commits     = row.commits;
   ag.updated_at = row.updated_at ? new Date(row.updated_at).getTime() : Date.now();
+
+  // Update position based on new status
+  if (row.status && row.status !== prevStatus) {
+    const idx = agents.indexOf(ag);
+    const inBurrow = ['idle','done','sleeping','reserve','dead'].includes(ag.status);
+    if (inBurrow) {
+      const pos = getBurrowIdlePos(idx);
+      ag.targetX = pos.x; ag.targetY = pos.y;
+      ag.idleActivity = (ag.status !== 'sleeping' && ag.status !== 'dead') ? randInt(0, 19) : -1;
+      ag.idleTimer = 0;
+    } else {
+      const pos = getOfficePos(ag.deskIdx);
+      ag.targetX = pos.x; ag.targetY = pos.y;
+      ag.idleActivity = -1;
+    }
+    // Wake-up bounce
+    if (prevStatus === 'sleeping' && ag.status !== 'sleeping') {
+      ag.wakeUpBounceStart = performance.now() / 1000;
+    }
+  }
 }
 
 function startSupabasePoll() {
@@ -5685,15 +5701,14 @@ function render(timestamp) {
 
       // Red blinking outline
       if (Math.sin(deadT * 3) > 0) {
-        ctx.save();
-        ctx.shadowColor = '#ff2244';
-        ctx.shadowBlur = 18;
-        ctx.strokeStyle = '#ff2244';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255,34,68,0.15)';
+        ctx.lineWidth = 12;
         ctx.beginPath();
         ctx.ellipse(0, 0, 22, 18, 0, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.restore();
+        ctx.strokeStyle = '#ff2244';
+        ctx.lineWidth = 2;
+        ctx.stroke();
       }
 
       // Grey tint overlay — draw rat rotated (dead on floor)
@@ -5708,12 +5723,13 @@ function render(timestamp) {
       const haloAlpha = 0.5 + Math.sin(deadT * 2) * 0.5;
       ctx.save();
       ctx.globalAlpha = haloAlpha;
-      ctx.strokeStyle = '#ffffaa';
-      ctx.lineWidth = 2.5;
-      ctx.shadowColor = '#ffffaa';
-      ctx.shadowBlur = 10;
+      ctx.strokeStyle = 'rgba(255,255,170,0.15)';
+      ctx.lineWidth = 10;
       ctx.beginPath();
       ctx.ellipse(0, -28, 9, 3, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = '#ffffaa';
+      ctx.lineWidth = 2.5;
       ctx.stroke();
       ctx.globalAlpha = 1;
       ctx.restore();
@@ -5896,13 +5912,15 @@ function render(timestamp) {
     const sc = COLORS[agent.status] || '#888';
     ctx.save();
     ctx.translate(agent.x, agent.y);
-    ctx.shadowColor = sc;
-    ctx.shadowBlur  = 10;
     ctx.fillStyle   = sc;
+    ctx.globalAlpha = 0.15;
+    ctx.beginPath();
+    ctx.arc(0, -40, 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
     ctx.beginPath();
     ctx.arc(0, -40, 4, 0, Math.PI * 2);
     ctx.fill();
-    ctx.shadowBlur = 0;
 
     // ── NAME LABEL ──
     ctx.font = "9px 'Share Tech Mono', monospace";
@@ -5929,11 +5947,10 @@ function render(timestamp) {
         if (monFlash) {
           ctx.save();
           ctx.translate(agent.x + 22, agent.y - 28);
+          ctx.fillStyle = 'rgba(255,34,68,0.12)';
+          ctx.beginPath(); ctx.roundRect(-17, -14, 34, 28, 6); ctx.fill();
           ctx.fillStyle = 'rgba(255,34,68,0.55)';
-          ctx.shadowColor = '#ff2244';
-          ctx.shadowBlur = 12;
           ctx.beginPath(); ctx.roundRect(-11, -8, 22, 16, 3); ctx.fill();
-          ctx.shadowBlur = 0;
           ctx.restore();
         }
       }
@@ -6038,9 +6055,10 @@ window.onload = function () {
     initDemoMode();
   } else {
     initSupabase();
-    // Place agents at their desks initially
+    // Place agents based on initial status (idle → burrow, working → desk)
     agents.forEach((agent, idx) => {
-      const pos = getOfficePos(agent.deskIdx);
+      const inBurrow = ['idle','done','sleeping','reserve','dead'].includes(agent.status);
+      const pos = inBurrow ? getBurrowIdlePos(idx) : getOfficePos(agent.deskIdx);
       agent.x = agent.targetX = pos.x;
       agent.y = agent.targetY = pos.y;
     });
